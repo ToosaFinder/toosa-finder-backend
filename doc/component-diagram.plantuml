@@ -1,0 +1,28 @@
+@startuml
+
+frame [Frontend] as frontend {
+    [Web Front] as webfront
+    [Android App] as android
+}
+frame [Backend] as backend {
+
+    component [Server] as server
+    () HTTP_API as serverHttpApi
+    serverHttpApi - server
+    database [] as database {
+        [Relational database] as db
+    }
+    server --> db : use
+}
+
+[API Model] as apimodel
+[API Client] as apiclient
+
+apimodel <-- server : import
+apimodel <--- apiclient : import
+android -u-> apiclient : import
+webfront -u-> apiclient : import
+apiclient -> serverHttpApi : use
+
+@enduml
+

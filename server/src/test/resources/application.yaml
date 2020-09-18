@@ -1,0 +1,15 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    username: postgres
+    password: 123321
+    url: jdbc:postgresql://localhost/toosafinder
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800000

@@ -10,35 +10,40 @@
 Пользовательский веб-интерфейс.
 
 #### Стек:
-
-Язык: TypeScript
-Библиотеки: React, ..(TODO: Next.js?) 
+- Язык: TypeScript
+- Библиотеки: React, ..(TODO: Next.js?) 
 
 ### Android
 
 Мобильное приложения для платформы Android
 
-Язык программирования: Kotlin
-Dependency Injection: TODO
-Дополнительные библиотеки UI компонентов: TODO
-Сетевое взаимодействие с сервером: API Client
+#### Стек:
+- Язык программирования: Kotlin
+- Dependency Injection: TODO
+- Дополнительные библиотеки UI компонентов: TODO
+- Сетевое взаимодействие с сервером: API Client
 
 ### API Model
 
 Библиотека cодержит DTO для взаимодействия с АПИ сервера, общие для Системы константы, включая, возможно, коды ошибок.
+
 Язык реализации: Kotlin/Multiplatform.
+
 Имеет только Сommon-Kotlin код, т.е не зависит от конечной платформы использования.
+
 Компилируется под JS и JVM
 
 ### API Client
 
 Библиотека для асинхронного взаимодействия с АПИ сервера.
+
 Инкапсулирует сетевые вызовы АПИ и обработку сетевых ошибок.
 
-Язык реализации: Kotlin/Multiplatform
-Сетевая библиотека: Ktor-client
-Компилируется под платформы JS и JVM для использования в веб- и Android-приложениях соответственно.
-Использует для API Model для десериализации ответов сервера
+#### Стек:
+- Язык реализации: Kotlin/Multiplatform
+- HTTP-клиент: Ktor-client
+- Компилируется под платформы JS и JVM для использования в веб- и Android-приложениях соответственно.
+- Использует для API Model для десериализации ответов сервера
 
 ### Server
 
@@ -52,12 +57,13 @@ Dependency Injection: TODO
     - почтовый сервер
     - в будущем OAuth сервера авторизации
 
-Язык реализации: Kotlin/JVM
-Веб-фреймворк: Spring Boot(Dependency Injection, обработка HTTP запросов)
-Валидация запросов: Konform
-Контроль доступа: Spring Security
-Веб-сервер: Embedded Tomcat
-ORM: JPA + Hibernate
-Версионирование БД: Flyway
-Юнит-тестирование: JUnit 5
-Интеграционное тестирование: SpringBootTest + RestAssured + Posgres 
+#### Стек:
+- Язык реализации: Kotlin/JVM
+- Веб-фреймворк: Spring Boot(Dependency Injection, обработка HTTP запросов)
+- Валидация запросов: Konform
+- Контроль доступа: Spring Security
+- Веб-сервер: Embedded Tomcat
+- ORM: JPA + Hibernate
+- Версионирование БД: Flyway
+- Юнит-тестирование: JUnit 5
+- Интеграционное тестирование: SpringBootTest + RestAssured + Posgres 

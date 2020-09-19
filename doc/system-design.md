@@ -19,8 +19,8 @@
 
 #### Стек:
 - Язык программирования: Kotlin
-- Dependency Injection: TODO
-- Дополнительные библиотеки UI компонентов: TODO
+- Dependency Injection: KOIN
+- Дополнительные библиотеки UI компонентов: TODO: Гугл карты 
 - Сетевое взаимодействие с сервером: API Client
 
 ### API Model

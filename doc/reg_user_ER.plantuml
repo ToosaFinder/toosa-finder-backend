@@ -1,0 +1,39 @@
+@startuml
+
+
+skinparam shadowing false
+
+entity User {
+   * id: long auto generated
+
+   * email
+
+   * login
+
+   // для подтвержденного\nпользователя должен быть установлен
+   * password
+
+   * registration_ts: timestamp
+}
+
+entity Role {
+   * value
+}
+
+entity EmailConfirmation {
+
+    //должен быть уникален
+    * uuid: UUID
+
+    * creation_ts: timestamp
+
+    * confirmation_ts: timestamp
+
+    //при создании true, после подтверждения \n false
+    * active: bool
+}
+
+User }-up-{ Role
+User }-left- EmailConfirmation
+
+@enduml

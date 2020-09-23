@@ -1,5 +1,5 @@
 .gradle
 .idea
 server/build/
-api-client/build/
-api-model/build/
+com.toosafinder.api-client/build/
+com.toosafinder.api-model/build/

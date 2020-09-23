@@ -25,7 +25,7 @@ dependencies {
 
     implementation("io.konform:konform-jvm:0.2.0")
 
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-com.toosafinder.api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
@@ -33,11 +33,11 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("com.zaxxer:HikariCP:3.4.5")
 
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-com.toosafinder.api:1.7.30")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    testApi("org.junit.jupiter:junit-jupiter-api:5.5.0")
+    testApi("org.junit.jupiter:junit-jupiter-com.toosafinder.api:5.5.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0")
     testImplementation("io.rest-assured:rest-assured:4.2.0")
     testImplementation("io.rest-assured:kotlin-extensions:4.2.0")

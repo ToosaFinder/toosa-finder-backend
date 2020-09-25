@@ -1,6 +1,8 @@
 package com.toosafinder.api
 
-actual abstract class ApiMethod<T, R> {
-    internal actual abstract suspend fun invokeInternal(arg: T): R
-    suspend fun invoke(arg: T): R = invokeInternal(arg)
+actual abstract class ApiMethod<T, R> actual constructor(
+        protected actual val req: T) {
+    internal actual abstract suspend fun executeInternal(): R
+
+    suspend fun call(): R = executeInternal()
 }

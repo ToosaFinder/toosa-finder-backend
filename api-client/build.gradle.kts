@@ -1,5 +1,4 @@
-import org.jetbrains.kotlin.js.backend.ast.JsName
-import org.jetbrains.kotlin.js.translate.utils.definePackageAlias
+@file:Suppress("LocalVariableName")
 
 plugins {
     kotlin("multiplatform")
@@ -16,7 +15,7 @@ kotlin {
     //используем оба юекенда котлин-компилятора
     js(IR) {
         browser()
-        useCommonJs()
+//        useCommonJs()
         binaries.executable()
     }
 
@@ -25,13 +24,19 @@ kotlin {
 //    }
 
     sourceSets {
-        val coroutinesVersion = "1.3.9"
+        val kotlin_coroutines_version: String by project
+        val kotlin_serialization_version: String by project
+        val ktor_version: String by project
 
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
 //                com.toosafinder.api(project(":com.toosafinder.api-model"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version")
+                implementation("io.ktor:ktor-client-core:$ktor_version")
+                implementation("io.ktor:ktor-client-json:$ktor_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlin_serialization_version")
             }
         }
         val commonTest by getting {
@@ -43,13 +48,15 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$kotlin_coroutines_version")
+                implementation("io.ktor:ktor-client-js:$ktor_version")
             }
         }
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutinesVersion")
+                implementation("io.ktor:ktor-client-android:$ktor_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version")
             }
         }
     }

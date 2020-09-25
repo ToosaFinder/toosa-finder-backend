@@ -1,5 +1,6 @@
 package com.toosafinder.api
 
+import io.ktor.client.*
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -22,9 +23,16 @@ interface RegisterUserRes {
 }
 
 @JsExport
-class RegisterUser: ApiMethod<RegisterUserReq, RegisterUserRes>(){
+class RegisterUser(
+    req: RegisterUserReq,
+    private val http: HttpClient
+): ApiMethod<RegisterUserReq, RegisterUserRes>(req){
 
-    override suspend fun invokeInternal(arg: RegisterUserReq): RegisterUserRes {
+    override suspend fun executeInternal(): RegisterUserRes {
+//        val res = http.post<com.toosafinder.api.RegisterUserRes>("/user/registerUser"){
+//            body = req
+//        }
+
         return RegisterUserRes.Success()
     }
 

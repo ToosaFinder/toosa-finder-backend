@@ -1,18 +1,17 @@
 package com.toosafinder.api
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.promise
 import kotlin.js.Promise
 
 @JsExport
-interface Promisable<T, R>{
-    @JsName("promise")
-    fun promise(arg: T): Promise<R>
-}
+actual abstract class ApiMethod<T, R> actual constructor(
+        protected actual val req: T
+) {
 
-@JsExport
-actual abstract class ApiMethod<T, R>: Promisable<T,R> {
-    internal actual abstract suspend fun invokeInternal(arg: T): R
-    final override fun promise(arg: T): Promise<R> =
-        GlobalScope.promise { invokeInternal(arg) }
+    internal actual abstract suspend fun executeInternal(): R
+
+    @JsName("execute")
+    fun execute(): Promise<R> =
+        GlobalScope.promise { executeInternal() }
 }

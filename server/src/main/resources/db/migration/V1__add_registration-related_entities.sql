@@ -12,22 +12,13 @@ create table roles(
 );
 
 create table users_roles(
-    user_id bigint references users on update cascade on delete cascade,
-    role_id bigint references roles on update cascade on delete cascade
+    user_id bigint not null references users on update cascade on delete cascade,
+    role_id bigint not null references roles on update cascade on delete cascade
 );
 
-create table registration_confirmations(
+create table email_tokens(
     id bigserial primary key,
-    uuid uuid unique,
-    user_id bigint references users on update cascade on delete cascade,
-    creation_time timestamp not null,
-    confirmation_time timestamp not null,
-    is_active boolean not null default true
+    token uuid not null unique,
+    user_id bigint not null references users on update cascade on delete cascade,
+    creation_time timestamp not null
 );
-
-create table password_change_confirmations(
-    id bigserial primary key,
-    uuid uuid unique,
-    user_id bigint references users on update cascade on delete cascade
-);
-

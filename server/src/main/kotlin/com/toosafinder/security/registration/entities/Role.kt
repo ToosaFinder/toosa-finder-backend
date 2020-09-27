@@ -11,11 +11,6 @@ internal class Role(
         @Column(name = "name")
         val name: String
 
-) : BaseEntity<Long>() {
-
-        @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-        val users: MutableSet<User> = hashSetOf()
-
-}
+) : BaseEntity<Long>()
 
 internal interface RoleRepository: JpaRepository<Role, Long>

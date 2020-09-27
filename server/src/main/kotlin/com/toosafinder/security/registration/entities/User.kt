@@ -18,7 +18,7 @@ internal class User(
         @Column(name = "password")
         val password: String,
 
-        @Column(name = "registration_ts")
+        @Column(name = "registration_time")
         val registrationTime: LocalDateTime
 
 ) : BaseEntity<Long>() {
@@ -31,14 +31,6 @@ internal class User(
         )
         val roles: MutableSet<Role> = hashSetOf()
 
-        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-        val registrationConfirmations: MutableSet<RegistrationConfirmation> = hashSetOf()
-
-        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-        val passwordChangeConfirmations: MutableSet<PasswordChangeConfirmation> = hashSetOf()
-
 }
 
-internal interface UserRepository: JpaRepository<User, Long> {
-        fun findByEmail(email: String): User?
-}
+internal interface UserRepository: JpaRepository<User, Long>

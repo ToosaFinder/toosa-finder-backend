@@ -22,11 +22,11 @@ internal class EmailTokenService(
     )
 
     fun validateToken(token: String): EmailTokenValidationResult {
-        println(tokenExpirationTime)
-
         val tokenValue = try {
             UUID.fromString(token)
-        } catch (e: IllegalArgumentException) { null } ?: return EmailTokenValidationResult.InvalidToken
+        } catch (e: IllegalArgumentException) {
+            null
+        } ?: return EmailTokenValidationResult.InvalidToken
 
         val emailToken = emailTokenRepository.findByValue(tokenValue) ?: return EmailTokenValidationResult.TokenNotFound
         val tokenLifetime = Duration.between(emailToken.creationTime, LocalDateTime.now())

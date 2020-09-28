@@ -20,9 +20,6 @@ internal class EmailToken(
         @Column(name = "creation_time")
         val creationTime: LocalDateTime,
 
-        @Column(name = "expiration_time")
-        val expirationTime: Long
-
 ): BaseEntity<Long>()
 
 internal interface EmailTokenRepository: JpaRepository<EmailToken, Long> {

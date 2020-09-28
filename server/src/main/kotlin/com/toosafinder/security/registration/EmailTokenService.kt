@@ -12,23 +12,41 @@ import java.util.*
 @Service
 internal class EmailTokenService(
         @Value("\${email-tokens.expiration-time}")
-        private val tokenExpirationTime: Long,
+        private val tokenExpirationTime: Duration,
 
         private val emailTokenRepository: EmailTokenRepository
 ) {
 
     fun generateToken(user: User): EmailToken = emailTokenRepository.save(
-            EmailToken(UUID.randomUUID(), user, LocalDateTime.now(), tokenExpirationTime)
+            EmailToken(UUID.randomUUID(), user, LocalDateTime.now())
     )
 
-    fun validateToken(token: String): User? {
+    fun validateToken(token: String): EmailTokenValidationResult {
+        println(tokenExpirationTime)
+
         val tokenValue = try {
             UUID.fromString(token)
-        } catch (e: IllegalArgumentException) { null } ?: return null
+        } catch (e: IllegalArgumentException) { null } ?: return EmailTokenValidationResult.InvalidToken
 
-        val emailToken = emailTokenRepository.findByValue(tokenValue) ?: return null
-        val tokenLifetime = Duration.between(emailToken.creationTime, LocalDateTime.now()).seconds
-        return if (tokenLifetime < emailToken.expirationTime) emailToken.user else null
+        val emailToken = emailTokenRepository.findByValue(tokenValue) ?: return EmailTokenValidationResult.TokenNotFound
+        val tokenLifetime = Duration.between(emailToken.creationTime, LocalDateTime.now())
+
+        return if (tokenLifetime < tokenExpirationTime)
+            EmailTokenValidationResult.Success(emailToken.user)
+        else
+            EmailTokenValidationResult.TokenExpired
     }
+
+}
+
+internal sealed class EmailTokenValidationResult {
+
+    class Success(val user: User): EmailTokenValidationResult()
+
+    object InvalidToken: EmailTokenValidationResult()
+
+    object TokenNotFound: EmailTokenValidationResult()
+
+    object TokenExpired: EmailTokenValidationResult()
 
 }

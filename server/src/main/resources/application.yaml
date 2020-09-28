@@ -19,3 +19,6 @@ spring:
 
   flyway:
     validate-migration-naming: true
+
+email-tokens:
+  expiration-time: 2592000

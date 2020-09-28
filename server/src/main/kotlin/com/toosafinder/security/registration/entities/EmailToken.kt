@@ -10,8 +10,8 @@ import javax.persistence.*
 @Table(name = "email_tokens")
 internal class EmailToken(
 
-        @Column(name = "token")
-        val token: UUID,
+        @Column(name = "value")
+        val value: UUID,
 
         @ManyToOne
         @JoinColumn(name = "user_id")
@@ -20,6 +20,11 @@ internal class EmailToken(
         @Column(name = "creation_time")
         val creationTime: LocalDateTime,
 
+        @Column(name = "expiration_time")
+        val expirationTime: Long
+
 ): BaseEntity<Long>()
 
-internal interface EmailTokenRepository: JpaRepository<EmailToken, Long>
+internal interface EmailTokenRepository: JpaRepository<EmailToken, Long> {
+        fun findByValue(value: UUID): EmailToken?
+}

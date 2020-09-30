@@ -11,7 +11,13 @@ internal class Role(
         @Column(name = "name")
         val name: String
 
-) : BaseEntity<Long>()
+) : BaseEntity<Long>() {
+
+        enum class Name {
+                USER
+        }
+
+}
 
 internal interface RoleRepository: JpaRepository<Role, Long> {
         fun findByName(name: String): Role?

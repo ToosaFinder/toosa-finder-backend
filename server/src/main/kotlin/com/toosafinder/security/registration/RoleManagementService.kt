@@ -5,11 +5,10 @@ import com.toosafinder.security.registration.entities.RoleRepository
 import com.toosafinder.security.registration.entities.User
 import com.toosafinder.security.registration.entities.UserRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional
 internal class RoleManagementService(
         private val userRepository: UserRepository,
         private val roleRepository: RoleRepository
@@ -20,7 +19,6 @@ internal class RoleManagementService(
 
     fun removeRoleFromUser(userId: Long, roleName: String): RoleManagementResult =
             doActionWithUserRole(userId, roleName) { roles.remove(it) }
-
 
     private inline fun doActionWithUserRole(
             userId: Long, roleName: String, action: (User).(Role) -> Unit

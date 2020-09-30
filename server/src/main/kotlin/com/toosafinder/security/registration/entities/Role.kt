@@ -13,4 +13,6 @@ internal class Role(
 
 ) : BaseEntity<Long>()
 
-internal interface RoleRepository: JpaRepository<Role, Long>
+internal interface RoleRepository: JpaRepository<Role, Long> {
+        fun findByName(name: String): Role?
+}

@@ -5,11 +5,13 @@ import com.toosafinder.security.registration.entities.EmailTokenRepository
 import com.toosafinder.security.registration.entities.User
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 
 @Service
+@Transactional
 internal class EmailTokenService(
         @Value("\${email-tokens.expiration-time}")
         private val tokenExpirationTime: Duration,

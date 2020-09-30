@@ -8,4 +8,3 @@ pluginManagement {
 rootProject.name = "root"
 include("server")
 include("api-model")
-include("api-client")

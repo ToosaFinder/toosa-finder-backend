@@ -24,3 +24,5 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Deploy to registry
         run: ./gradlew :api-model:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

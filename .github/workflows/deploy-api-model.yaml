@@ -1,5 +1,5 @@
 ---
-name: ci
+name: Deploy api model
 on:
   push:
     branches:

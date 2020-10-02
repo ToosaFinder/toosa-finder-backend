@@ -24,5 +24,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build with Gradle
         run: ./gradlew :server:build
-      - name: Test
-        run: ./gradlew :server:test
+      - name: Set up testing environment
+        run: docker-compose up -d
+      - name: Run all tests (including integrational)
+        run: ./gradlew :server:allTest

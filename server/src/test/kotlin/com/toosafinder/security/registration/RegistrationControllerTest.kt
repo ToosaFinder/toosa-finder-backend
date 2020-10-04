@@ -12,6 +12,7 @@ import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import org.flywaydb.core.Flyway
+import org.junit.Ignore
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,6 +20,7 @@ import org.springframework.boot.web.server.LocalServerPort
 
 //этот тэг нужен чтобы можно было запустить юнит-тесты отдельно
 @Tag("integrationTest")
+@Disabled
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )

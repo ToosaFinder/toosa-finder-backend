@@ -21,6 +21,7 @@ dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 
 
     implementation("io.konform:konform-jvm:0.2.0")

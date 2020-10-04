@@ -16,6 +16,23 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  mail:
+    host:
+      smtp.gmail.com
+    port:
+      587
+    username:
+      toosafinder.beta@gmail.com
+    password:
+      p4$$w0rd
+    properties:
+      mail:
+        smtp:
+          auth:
+            true
+          starttls:
+            enable:
+              true
 
   flyway:
     validate-migration-naming: true

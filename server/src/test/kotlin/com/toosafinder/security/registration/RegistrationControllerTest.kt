@@ -24,7 +24,6 @@ import org.springframework.boot.web.server.LocalServerPort
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-@Disabled
 internal class RegistrationControllerTest(
     @LocalServerPort
     val port: Int,

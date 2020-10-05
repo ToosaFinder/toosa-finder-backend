@@ -3,7 +3,6 @@ package com.toosafinder.security.registration
 import com.toosafinder.api.registration.UserRegistrationErrors
 import com.toosafinder.api.registration.UserRegistrationReq
 import com.toosafinder.logging.LoggerProperty
-import com.toosafinder.security.registration.entities.UserRepository
 import com.toosafinder.webcommon.HTTP
 import com.toosafinder.webcommon.throwIfNotValid
 import io.konform.validation.Validation
@@ -13,7 +12,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/user/registration")
@@ -46,7 +48,7 @@ private class RegistrationController(
                 payload = "some additional info here"
             )
             is RegResult.EmailDuplication -> HTTP.conflict(
-                code = UserRegistrationErrors.EMAIL_DUPLICAtiON_ERROR.name,
+                code = UserRegistrationErrors.EMAIL_DUPLICATION_ERROR.name,
             )
         }
     }

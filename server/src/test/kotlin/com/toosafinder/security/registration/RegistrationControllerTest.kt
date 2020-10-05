@@ -19,11 +19,11 @@ import org.springframework.boot.web.server.LocalServerPort
 
 //этот тэг нужен чтобы можно было запустить юнит-тесты отдельно
 @Tag("integrationTest")
+@Disabled
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-@Disabled
 internal class RegistrationControllerTest(
     @LocalServerPort
     val port: Int,

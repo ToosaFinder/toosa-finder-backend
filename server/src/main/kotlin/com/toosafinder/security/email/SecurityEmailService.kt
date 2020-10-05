@@ -1,8 +1,7 @@
 package com.toosafinder.security.email
 
 import com.toosafinder.email.service.EmailService
-import com.toosafinder.util.messagetemplates.MessageTemplateLoader
-import com.toosafinder.util.messagetemplates.MessageTemplateResolver
+import com.toosafinder.util.ResourceLoader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
@@ -10,10 +9,6 @@ import java.util.*
 @Service
 class SecurityEmailService(
     private val emailService: EmailService,
-
-    private val templateLoader: MessageTemplateLoader,
-
-    private val templateResolver: MessageTemplateResolver,
 
     @Value("\${email.email-confirmation-url}")
     private val emailConfirmationUrl: String,
@@ -28,9 +23,11 @@ class SecurityEmailService(
     private val passwordRestoreTemplateFilePath: String
 ) {
 
+    private val templateResolver = MessageTemplateResolver("{", "}")
+
     fun sendEmailConfirmation(email: String, uuid: UUID) {
-        val template = templateLoader.loadAsString(emailConfirmationTemplateFilePath)
-        val substitutions = mapOf<String, String>(
+        val template = ResourceLoader.loadAsString(emailConfirmationTemplateFilePath)
+        val substitutions = mapOf(
             "url" to emailConfirmationUrl, "name" to email, "uuid" to uuid.toString()
         )
         val body = templateResolver.resolve(template, substitutions)
@@ -39,12 +36,26 @@ class SecurityEmailService(
     }
 
     fun sendPasswordRestore(email: String, uuid: UUID) {
-        val template = templateLoader.loadAsString(passwordRestoreTemplateFilePath)
-        val substitutions = mapOf<String, String>(
+        val template = ResourceLoader.loadAsString(passwordRestoreTemplateFilePath)
+        val substitutions = mapOf(
             "url" to passwordRestoreUrl, "name" to email, "uuid" to uuid.toString()
         )
         val body = templateResolver.resolve(template, substitutions)
 
         emailService.sendMessage(email, "Сброс пароля", body)
     }
+}
+
+internal class MessageTemplateResolver(
+    private val prefix: String,
+
+    private val postfix: String = ""
+) {
+
+    fun resolve(template: String, substitutions: Map<String, String>): String =
+        substitutions.entries.fold(template) {
+                acc, (argName, value) -> acc.replace(getPlaceholderRegex(argName), value)
+        }
+
+    private fun getPlaceholderRegex(argName: String) = prefix + argName + postfix
 }

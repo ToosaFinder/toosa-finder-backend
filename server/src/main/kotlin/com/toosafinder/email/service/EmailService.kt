@@ -10,14 +10,15 @@ class EmailService(private val sender: MailSender) {
 
     fun sendMessage(to: Array<String>, subject: String, body: String) {
         val message = SimpleMailMessage()
-        message.setTo(*to)
-        message.subject = subject
-        message.text = body
+        message.apply {
+            setTo(*to)
+            this.subject = subject
+            text = body
+        }
 
         sender.send(message)
     }
 
-    fun sendMessage(to: String, subject: String, body: String) = sendMessage(
-        arrayOf(to), subject, body
-    )
+    fun sendMessage(to: String, subject: String, body: String) =
+        sendMessage(arrayOf(to), subject, body)
 }

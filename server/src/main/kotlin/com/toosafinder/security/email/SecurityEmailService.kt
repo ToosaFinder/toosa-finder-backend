@@ -64,5 +64,6 @@ internal class MessageTemplateResolver(
         substitutions.entries.fold(template) {
                 acc, (argName, value) -> acc.replace(getPlaceholderRegex(argName), value)
         }
+
     private fun getPlaceholderRegex(argName: String) = prefix + argName + postfix
 }

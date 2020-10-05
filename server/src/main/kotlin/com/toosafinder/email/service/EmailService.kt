@@ -7,16 +7,17 @@ import org.springframework.stereotype.Service
 
 @Service
 class EmailService(private val sender: MailSender) {
-    fun sendMessage(to: Array<String>, subject: String, text: String) {
+
+    fun sendMessage(to: Array<String>, subject: String, body: String) {
         val message = SimpleMailMessage()
         message.setTo(*to)
         message.subject = subject
-        message.text = text
+        message.text = body
 
         sender.send(message)
     }
 
-    fun sendMessage(to: String, subject: String, text: String) = sendMessage(
-        arrayOf(to), subject, text
+    fun sendMessage(to: String, subject: String, body: String) = sendMessage(
+        arrayOf(to), subject, body
     )
 }

@@ -23,7 +23,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
-
     implementation("io.konform:konform-jvm:0.2.0")
 
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")

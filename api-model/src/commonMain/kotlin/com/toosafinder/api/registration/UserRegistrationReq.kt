@@ -8,5 +8,5 @@ data class UserRegistrationReq(
 
 enum class UserRegistrationErrors {
     LOGIN_DUPLICATION_ERROR,
-    EMAIL_DUPLICAtiON_ERROR
+    EMAIL_DUPLICATION_ERROR
 }

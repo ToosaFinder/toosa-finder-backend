@@ -1,6 +1,8 @@
 package com.toosafinder.security.email
 
-import com.toosafinder.email.service.EmailService
+import com.toosafinder.email.EmailSendingResult
+import com.toosafinder.email.EmailService
+import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.util.ResourceLoader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -25,24 +27,30 @@ class SecurityEmailService(
 
     private val templateResolver = MessageTemplateResolver("{", "}")
 
-    fun sendEmailConfirmation(email: String, uuid: UUID) {
+    private val log by LoggerProperty()
+
+    fun sendEmailConfirmation(email: String, uuid: UUID): EmailSendingResult {
+        log.trace("Trying to send email confirmation message to $email")
+
         val template = ResourceLoader.loadAsString(emailConfirmationTemplateFilePath)
         val substitutions = mapOf(
             "url" to emailConfirmationUrl, "name" to email, "uuid" to uuid.toString()
         )
         val body = templateResolver.resolve(template, substitutions)
 
-        emailService.sendMessage(email, "Подтверждение почты", body)
+        return emailService.sendMessage(email, "Подтверждение почты", body)
     }
 
-    fun sendPasswordRestore(email: String, uuid: UUID) {
+    fun sendPasswordRestore(email: String, uuid: UUID): EmailSendingResult {
+        log.trace("Trying to send password restore message to $email")
+
         val template = ResourceLoader.loadAsString(passwordRestoreTemplateFilePath)
         val substitutions = mapOf(
             "url" to passwordRestoreUrl, "name" to email, "uuid" to uuid.toString()
         )
         val body = templateResolver.resolve(template, substitutions)
 
-        emailService.sendMessage(email, "Сброс пароля", body)
+        return emailService.sendMessage(email, "Сброс пароля", body)
     }
 }
 
@@ -56,6 +64,5 @@ internal class MessageTemplateResolver(
         substitutions.entries.fold(template) {
                 acc, (argName, value) -> acc.replace(getPlaceholderRegex(argName), value)
         }
-
     private fun getPlaceholderRegex(argName: String) = prefix + argName + postfix
 }

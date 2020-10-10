@@ -1,8 +1,8 @@
 package com.toosafinder.security.registration
 
-import com.toosafinder.security.registration.entities.EmailToken
-import com.toosafinder.security.registration.entities.EmailTokenRepository
-import com.toosafinder.security.registration.entities.User
+import com.toosafinder.security.entities.EmailToken
+import com.toosafinder.security.entities.EmailTokenRepository
+import com.toosafinder.security.entities.User
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

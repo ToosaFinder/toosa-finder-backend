@@ -1,8 +1,10 @@
-package com.toosafinder.security.registration.entities
+package com.toosafinder.security.entities
 
 import com.toosafinder.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Table
 
 @Entity
 @Table(name = "roles")

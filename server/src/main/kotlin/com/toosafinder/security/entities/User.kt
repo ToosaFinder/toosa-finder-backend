@@ -1,4 +1,4 @@
-package com.toosafinder.security.registration.entities
+package com.toosafinder.security.entities
 
 import com.toosafinder.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository
@@ -16,7 +16,7 @@ internal class User(
         val login: String,
 
         @Column(name = "password")
-        val password: String,
+        var password: String,
 
         @Column(name = "registration_time")
         val registrationTime: LocalDateTime
@@ -34,9 +34,5 @@ internal class User(
 }
 
 internal interface UserRepository: JpaRepository<User, Long> {
-
-        fun existsByLogin(login: String): Boolean
-
-        fun existsByEmail(email: String): Boolean
-
+        fun findByEmail(email: String): User?
 }

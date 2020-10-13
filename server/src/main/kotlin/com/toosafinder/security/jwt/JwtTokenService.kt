@@ -7,14 +7,9 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.convert.DurationUnit
 import org.springframework.stereotype.Component
 import java.security.Key
-import java.time.Clock
-import java.time.Duration
-import java.time.temporal.ChronoUnit
 import java.util.*
-
 
 data class Payload(val email: String, val refreshTokenId: Int)
 
@@ -32,31 +27,37 @@ sealed class ParseClaimsJwsResult {
 
 @Component
 class JwtTokenService(
-    private val clock: Clock,
-
     @Value("\${jwt.secret}")
     private val secret: String,
 
-    @DurationUnit(ChronoUnit.HOURS)
     @Value("\${jwt.expiration}")
-    private var duration: Duration
+    private val validityInMilliSeconds: Long
 
 ) {
     fun generateToken(payload: Payload): String {
         val claims: Map<String, Any> = HashMap()
+
+        val now = Date()
+        val validity = Date(now.time + validityInMilliSeconds)
+
         return Jwts.builder()
             .setClaims(claims)
             .setSubject(payload.email)
             .setId(payload.refreshTokenId.toString())
-            .setIssuedAt(Date(clock.millis()))
-            .setExpiration(Date(clock.millis() + duration.toMillis()))
+            .setIssuedAt(now)
+            .setExpiration(validity)
             .signWith(getSigningKey())
             .compact()
     }
 
     fun validateToken(token: String): JwtTokenValidationResult {
         return when (val parseClaimsJwsResult = getAllClaims(token)) {
-            is ParseClaimsJwsResult.Success -> JwtTokenValidationResult.Success(Payload(parseClaimsJwsResult.claims.subject, parseClaimsJwsResult.claims.id.toInt()))
+            is ParseClaimsJwsResult.Success -> JwtTokenValidationResult.Success(
+                Payload(
+                    parseClaimsJwsResult.claims.subject,
+                    parseClaimsJwsResult.claims.id.toInt()
+                )
+            )
             is ParseClaimsJwsResult.SignatureInvalid -> JwtTokenValidationResult.SignatureInvalid(parseClaimsJwsResult.message)
             is ParseClaimsJwsResult.TokenExpired -> JwtTokenValidationResult.TokenExpired(parseClaimsJwsResult.message)
         }

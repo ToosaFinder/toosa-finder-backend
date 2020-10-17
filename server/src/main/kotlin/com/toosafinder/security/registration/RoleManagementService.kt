@@ -23,7 +23,8 @@ internal class RoleManagementService(
     private inline fun doActionWithUserRole(
             userId: Long, roleName: String, action: (User).(Role) -> Unit
     ): RoleManagementResult {
-        val role = roleRepository.findByName(roleName) ?: return RoleManagementResult.RoleNotFound
+        val role = roleRepository.findByName(roleName)
+        check(role != null) { "role must be not null" }
         val user = userRepository.findById(userId).orElse(null) ?: return RoleManagementResult.UserNotFound
         user.action(role)
         userRepository.save(user)
@@ -33,11 +34,6 @@ internal class RoleManagementService(
 }
 
 internal sealed class RoleManagementResult {
-
     object Success: RoleManagementResult()
-
-    object RoleNotFound: RoleManagementResult()
-
     object UserNotFound: RoleManagementResult()
-
 }

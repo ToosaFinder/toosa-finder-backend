@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 internal class LoginService(
     private val tokenService: EmailTokenService,
-
     private val emailService: SecurityEmailService,
-
     private val userRepository: UserRepository
 ) {
 

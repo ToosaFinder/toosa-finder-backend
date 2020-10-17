@@ -11,7 +11,7 @@ import javax.persistence.Table
 internal class Role(
 
         @Column(name = "name")
-        val name: String
+        val name: Name
 
 ) : BaseEntity<Long>() {
 

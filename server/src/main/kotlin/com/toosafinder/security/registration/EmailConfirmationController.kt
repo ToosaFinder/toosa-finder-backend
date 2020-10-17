@@ -1,6 +1,6 @@
 package com.toosafinder.security.registration
 
-import com.toosafinder.security.registration.entities.Role
+import com.toosafinder.security.entities.Role
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable

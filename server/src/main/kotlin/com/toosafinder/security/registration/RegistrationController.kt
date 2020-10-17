@@ -8,6 +8,7 @@ import com.toosafinder.security.UserCreationResult
 import com.toosafinder.security.UserService
 import com.toosafinder.security.email.SecurityEmailService
 import com.toosafinder.webcommon.HTTP
+import com.toosafinder.webcommon.Validations
 import com.toosafinder.webcommon.throwIfNotValid
 import io.konform.validation.Validation
 import io.konform.validation.jsonschema.maxLength
@@ -36,7 +37,7 @@ private class RegistrationController(
         }
 
         UserRegistrationReq::password {
-            minLength(8)
+            run(Validations.passwordValidation)
         }
     }
 

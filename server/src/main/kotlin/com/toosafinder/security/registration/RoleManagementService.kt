@@ -1,9 +1,9 @@
 package com.toosafinder.security.registration
 
-import com.toosafinder.security.registration.entities.Role
-import com.toosafinder.security.registration.entities.RoleRepository
-import com.toosafinder.security.registration.entities.User
-import com.toosafinder.security.registration.entities.UserRepository
+import com.toosafinder.security.entities.Role
+import com.toosafinder.security.entities.RoleRepository
+import com.toosafinder.security.entities.User
+import com.toosafinder.security.entities.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

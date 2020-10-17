@@ -1,4 +1,4 @@
-package com.toosafinder.security.registration.entities
+package com.toosafinder.security.entities
 
 import com.toosafinder.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository

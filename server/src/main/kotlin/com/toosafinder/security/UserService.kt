@@ -1,7 +1,7 @@
 package com.toosafinder.security
 
-import com.toosafinder.security.registration.entities.User
-import com.toosafinder.security.registration.entities.UserRepository
+import com.toosafinder.security.entities.User
+import com.toosafinder.security.entities.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation

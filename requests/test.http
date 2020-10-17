@@ -1,0 +1,26 @@
+### GET request with a header
+POST http://{{host}}:{{port}}/user/registration
+Content-Type: application/json
+
+{
+  "email": "Pasha21215@gmail.com",
+  "login": "haha",
+  "password": "asdf1dsafads3f1asdf1dsafads3f1asdf1dsafads3f1asdf1dsafads3f1asdf1dsafads3f1asdf1dsafads3f1"
+}
+
+#### GET request with parameter
+#GET https://httpbin.org/get?show_env=1
+#Accept: application/json
+#
+#### GET request with environment variables
+#GET {{host}}/get?show_env={{show_env}}
+#Accept: application/json
+#
+#### GET request with disabled redirects
+## @no-redirect
+#GET http://httpbin.org/status/301
+#
+#### GET request with dynamic variables
+#GET http://httpbin.org/anything?id={{$uuid}}&ts={{$timestamp}}
+#
+####

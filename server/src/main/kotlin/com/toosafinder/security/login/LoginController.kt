@@ -1,9 +1,6 @@
 package com.toosafinder.security.login
 
-import com.toosafinder.api.login.PasswordRestoreErrors
-import com.toosafinder.api.login.PasswordRestoreReq
-import com.toosafinder.api.login.PasswordSetErrors
-import com.toosafinder.api.login.PasswordSetReq
+import com.toosafinder.api.login.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.webcommon.HTTP
 import com.toosafinder.webcommon.Validations
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/user")
 private class LoginController(
+    private val passwordRestoreService: PasswordRestoreService,
     private val loginService: LoginService
 ) {
 
@@ -33,7 +31,7 @@ private class LoginController(
     fun restorePassword(@RequestBody req: PasswordRestoreReq): ResponseEntity<*> {
         log.trace("User with email ${req.email} has queried password restore")
 
-        return when(loginService.restorePassword(req.email)) {
+        return when(passwordRestoreService.restorePassword(req.email)) {
             is PasswordRestoreResult.Success -> HTTP.ok()
             is PasswordRestoreResult.UserNotFound -> HTTP.conflict(
                 code = PasswordRestoreErrors.USER_NOT_FOUND.name
@@ -49,11 +47,22 @@ private class LoginController(
         log.trace("User with email token ${req.emailToken} has queried password change")
 
         passwordSetValidation.throwIfNotValid(req)
-        return when(loginService.setPassword(req.emailToken, req.password)) {
+        return when(passwordRestoreService.setPassword(req.emailToken, req.password)) {
             is PasswordSetResult.Success -> HTTP.ok()
             is PasswordSetResult.TokenNotValid -> HTTP.conflict(
                 code = PasswordSetErrors.EMAIL_TOKEN_NOT_VALID.name
             )
+        }
+    }
+
+    @PostMapping("/login")
+    fun login(@RequestBody req: LoginReq): ResponseEntity<*>{
+        return when(val res = loginService.login(req.userId, req.password)){
+            is LoginResult.Failure -> HTTP.conflict(code = LOGIN_ERROR)
+            is LoginResult.Success -> HTTP.ok(
+                LoginRes(
+                    accessToken = res.accessToken
+                ))
         }
     }
 

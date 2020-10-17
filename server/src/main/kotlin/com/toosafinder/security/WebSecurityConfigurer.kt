@@ -40,7 +40,7 @@ class WebSecurityConfigurer(
             .antMatchers("/user/login").permitAll()
             .antMatchers("/user/set-password").permitAll()
             .antMatchers("/user/restore-password").permitAll()
-            .antMatchers("/user/email-confirmed").permitAll()
+            .antMatchers("/user/email-confirmed/**").permitAll()
 //
 //            // MA endpoints
 //            .antMatchers("/user/mobile-app/token").hasAnyAuthority(Role.MOBILE_APP)

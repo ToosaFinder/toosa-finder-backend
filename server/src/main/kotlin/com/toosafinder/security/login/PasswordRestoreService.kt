@@ -8,6 +8,7 @@ import com.toosafinder.security.jwt.JwtTokenService
 import com.toosafinder.security.jwt.JwtPayload
 import com.toosafinder.security.registration.EmailTokenService
 import com.toosafinder.security.registration.EmailTokenValidationResult
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,7 +17,7 @@ internal class PasswordRestoreService(
     private val tokenService: EmailTokenService,
     private val emailService: SecurityEmailService,
     private val userRepository: UserRepository,
-    private val jwtTokenService: JwtTokenService
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     private val log by LoggerProperty()
@@ -39,7 +40,7 @@ internal class PasswordRestoreService(
     fun setPassword(emailToken: String, newPassword: String): PasswordSetResult {
         return when(val tokenValidationResult = tokenService.validateToken(emailToken)) {
             is EmailTokenValidationResult.Success -> {
-                tokenValidationResult.user.password = newPassword
+                tokenValidationResult.user.password = passwordEncoder.encode(newPassword)
 
                 log.debug("${tokenValidationResult.user.login} has successfully " +
                         "changed their password")
@@ -47,22 +48,6 @@ internal class PasswordRestoreService(
             }
             else -> PasswordSetResult.TokenNotValid
         }
-    }
-
-    //TODO: проверить что пришло - логин или пароль
-    //TODO: рефрещ
-    fun login(loginOrEmail: String, password: String): LoginResult {
-        val user = userRepository.findByEmail(loginOrEmail)
-            ?: userRepository.findByLogin(loginOrEmail)
-            ?: return LoginResult.Failure
-        val accessToken = jwtTokenService.generateToken(JwtPayload(
-            email = user.email,
-            refreshTokenId = 1
-        ))
-        return LoginResult.Success(
-            accessToken = accessToken,
-            refreshToken = ""
-        )
     }
 }
 

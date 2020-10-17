@@ -3,6 +3,7 @@ package com.toosafinder.security.registration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.toosafinder.api.registration.UserRegistrationReq
+import com.toosafinder.security.BaseIntegrationTest
 import io.kotest.matchers.shouldBe
 import io.restassured.RestAssured
 import io.restassured.filter.log.RequestLoggingFilter
@@ -18,27 +19,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 
 //этот тэг нужен чтобы можно было запустить юнит-тесты отдельно
-@Tag("integrationTest")
 @Disabled
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 internal class RegistrationControllerTest(
     @LocalServerPort
     val port: Int,
     @Autowired
     val flyway: Flyway
-) {
-
-    init {
-        //чистим базу и накатываем миграции для тестов.
-        //неужели для каждого теста придется делать так?..
-        //если кто придумает что получше, прошу предлагайте
-        flyway.clean()
-        flyway.migrate()
-        RestAssured.port = port
-    }
+): BaseIntegrationTest(port, flyway) {
 
     private val serializer = ObjectMapper()
 

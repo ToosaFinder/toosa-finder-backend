@@ -28,6 +28,13 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - name: test
+        run: |
+          pwd
+          ls -la
+          ls -la ./server
+          ls -la ./server/build
+          ls -la ./server/build/libs
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:

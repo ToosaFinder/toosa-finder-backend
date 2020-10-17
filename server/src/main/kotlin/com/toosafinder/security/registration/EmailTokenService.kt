@@ -24,31 +24,33 @@ internal class EmailTokenService(
     )
 
     fun validateToken(token: String): EmailTokenValidationResult {
-        val tokenValue = try {
-            UUID.fromString(token)
-        } catch (e: IllegalArgumentException) {
-            null
-        } ?: return EmailTokenValidationResult.InvalidToken
+        val tokenValue = uuidFromString(token)
+            ?: return EmailTokenValidationResult.InvalidToken
 
-        val emailToken = emailTokenRepository.findByValue(tokenValue) ?: return EmailTokenValidationResult.TokenNotFound
+        val emailToken = emailTokenRepository.findByValue(tokenValue)
+            ?: return EmailTokenValidationResult.TokenNotFound
         val tokenLifetime = Duration.between(emailToken.creationTime, LocalDateTime.now())
 
-        return if (tokenLifetime < tokenExpirationTime)
+        return if (tokenLifetime < tokenExpirationTime){
             EmailTokenValidationResult.Success(emailToken.user)
-        else
+        } else{
             EmailTokenValidationResult.TokenExpired
+        }
     }
 
 }
 
+private fun uuidFromString(src: String): UUID? {
+    return try {
+        UUID.fromString(src)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+}
+
 internal sealed class EmailTokenValidationResult {
-
     class Success(val user: User): EmailTokenValidationResult()
-
     object InvalidToken: EmailTokenValidationResult()
-
     object TokenNotFound: EmailTokenValidationResult()
-
     object TokenExpired: EmailTokenValidationResult()
-
 }

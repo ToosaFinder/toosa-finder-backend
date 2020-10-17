@@ -46,7 +46,7 @@ private class RegistrationController(
         log.trace("Trying to register user \"${req.login}\" with email \"${req.email}\"")
         validation.throwIfNotValid(req)
         return when (registrationService.registerUser(req.login, req.email, req.password)) {
-            is RegResult.Success -> HTTP.ok<Unit>()
+            is RegResult.Success -> HTTP.ok()
             is RegResult.LoginDuplication -> HTTP.conflict(
                 code = UserRegistrationErrors.LOGIN_DUPLICATION_ERROR.name,
                 message = "Provided username is already in use"

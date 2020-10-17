@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity
  */
 object HTTP {
 
-    fun <T> ok(): ResponseEntity<T> = ResponseEntity.ok().build()
+    fun ok(): ResponseEntity<Unit> = ResponseEntity.ok().build()
 
     fun <T> ok(body: T): ResponseEntity<T> = ResponseEntity.ok().body(body)
 

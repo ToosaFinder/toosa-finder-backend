@@ -54,7 +54,7 @@ class SecurityEmailService(
     }
 }
 
-internal class MessageTemplateResolver(
+private class MessageTemplateResolver(
     private val prefix: String,
 
     private val postfix: String = ""

@@ -15,14 +15,8 @@ data class Payload(val email: String, val refreshTokenId: Int)
 
 sealed class JwtTokenValidationResult {
     data class Success(val payload: Payload) : JwtTokenValidationResult()
-    data class TokenExpired(val message: String) : JwtTokenValidationResult()
-    data class SignatureInvalid(val message: String) : JwtTokenValidationResult()
-}
-
-sealed class ParseClaimsJwsResult {
-    data class Success(val claims: Claims) : ParseClaimsJwsResult()
-    data class TokenExpired(val message: String, val cause: Exception? = null) : ParseClaimsJwsResult()
-    data class SignatureInvalid(val message: String, val cause: Exception? = null) : ParseClaimsJwsResult()
+    object TokenExpired: JwtTokenValidationResult()
+    object SignatureInvalid: JwtTokenValidationResult()
 }
 
 @Component
@@ -58,8 +52,8 @@ class JwtTokenService(
                     parseClaimsJwsResult.claims.id.toInt()
                 )
             )
-            is ParseClaimsJwsResult.SignatureInvalid -> JwtTokenValidationResult.SignatureInvalid(parseClaimsJwsResult.message)
-            is ParseClaimsJwsResult.TokenExpired -> JwtTokenValidationResult.TokenExpired(parseClaimsJwsResult.message)
+            is ParseClaimsJwsResult.SignatureInvalid -> JwtTokenValidationResult.SignatureInvalid
+            is ParseClaimsJwsResult.TokenExpired -> JwtTokenValidationResult.TokenExpired
         }
     }
 
@@ -76,14 +70,14 @@ class JwtTokenService(
             .body
         ParseClaimsJwsResult.Success(claims)
     } catch (ex: ExpiredJwtException) {
-        ParseClaimsJwsResult.TokenExpired(
-            message = "Jwt token is expired",
-            cause = ex
-        )
+        ParseClaimsJwsResult.TokenExpired
     } catch (ex: JwtException) {
-        ParseClaimsJwsResult.SignatureInvalid(
-            message = "Jwt token is invalid",
-            cause = ex
-        )
+        ParseClaimsJwsResult.SignatureInvalid
     }
+}
+
+private sealed class ParseClaimsJwsResult {
+    data class Success(val claims: Claims) : ParseClaimsJwsResult()
+    object TokenExpired: ParseClaimsJwsResult()
+    object SignatureInvalid: ParseClaimsJwsResult()
 }

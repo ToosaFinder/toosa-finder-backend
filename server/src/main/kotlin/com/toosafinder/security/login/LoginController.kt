@@ -34,7 +34,7 @@ private class LoginController(
         log.trace("User with email ${req.email} has queried password restore")
 
         return when(loginService.restorePassword(req.email)) {
-            is PasswordRestoreResult.Success -> HTTP.ok<Unit>()
+            is PasswordRestoreResult.Success -> HTTP.ok()
             is PasswordRestoreResult.UserNotFound -> HTTP.conflict(
                 code = PasswordRestoreErrors.USER_NOT_FOUND.name
             )
@@ -50,10 +50,11 @@ private class LoginController(
 
         passwordSetValidation.throwIfNotValid(req)
         return when(loginService.setPassword(req.emailToken, req.password)) {
-            is PasswordSetResult.Success -> HTTP.ok<Unit>()
+            is PasswordSetResult.Success -> HTTP.ok()
             is PasswordSetResult.TokenNotValid -> HTTP.conflict(
                 code = PasswordSetErrors.EMAIL_TOKEN_NOT_VALID.name
             )
         }
     }
+
 }

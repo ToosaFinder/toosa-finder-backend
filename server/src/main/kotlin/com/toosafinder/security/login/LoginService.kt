@@ -1,59 +1,51 @@
 package com.toosafinder.security.login
 
-import com.toosafinder.email.EmailSendingResult
 import com.toosafinder.logging.LoggerProperty
-import com.toosafinder.security.email.SecurityEmailService
 import com.toosafinder.security.entities.UserRepository
-import com.toosafinder.security.registration.EmailTokenService
-import com.toosafinder.security.registration.EmailTokenValidationResult
+import com.toosafinder.security.jwt.JwtTokenService
+import com.toosafinder.security.jwt.JwtPayload
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 internal class LoginService(
-    private val tokenService: EmailTokenService,
-    private val emailService: SecurityEmailService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val jwtTokenService: JwtTokenService,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     private val log by LoggerProperty()
 
-    fun restorePassword(email: String): PasswordRestoreResult {
-        val user = userRepository.findByEmail(email)
-            ?: return PasswordRestoreResult.UserNotFound
-        val uuid = tokenService.generateToken(user).value
+    //TODO: проверить что пришло - логин или пароль
+    fun login(loginOrEmail: String, password: String): LoginResult {
+        val user = userRepository.findByEmail(loginOrEmail)
+            ?: userRepository.findByLogin(loginOrEmail)
 
-        return when(emailService.sendPasswordRestore(email, uuid)) {
-            is EmailSendingResult.Success -> {
-                log.debug("Successfully sent password restore letter to ${user.login}")
-                PasswordRestoreResult.Success
-            }
-            is EmailSendingResult.SendingError -> PasswordRestoreResult.EmailSendingError
+        if(user == null) {
+            log.debug("user {} not found", loginOrEmail)
+            return LoginResult.Failure
         }
-    }
 
-    @Transactional
-    fun setPassword(emailToken: String, newPassword: String): PasswordSetResult {
-        return when(val tokenValidationResult = tokenService.validateToken(emailToken)) {
-            is EmailTokenValidationResult.Success -> {
-                tokenValidationResult.user.password = newPassword
-
-                log.debug("${tokenValidationResult.user.login} has successfully " +
-                        "changed their password")
-                PasswordSetResult.Success
-            }
-            else -> PasswordSetResult.TokenNotValid
+        if(!passwordEncoder.matches(password, user.password)){
+            log.debug("password of user {} does not match", loginOrEmail)
+            return LoginResult.Failure
         }
+
+        val accessToken = jwtTokenService.generateToken(
+            JwtPayload(
+                email = user.email,
+                refreshTokenId = 1
+            ))
+        return LoginResult.Success(
+            accessToken = accessToken
+        )
     }
 }
 
-internal sealed class PasswordRestoreResult {
-    object Success: PasswordRestoreResult()
-    object UserNotFound: PasswordRestoreResult()
-    object EmailSendingError: PasswordRestoreResult()
-}
-
-internal sealed class PasswordSetResult {
-    object Success: PasswordSetResult()
-    object TokenNotValid: PasswordSetResult()
+internal sealed class LoginResult {
+    object Failure: LoginResult()
+    data class Success(
+        val accessToken: String,
+        val refreshToken: String? = null
+    ): LoginResult()
 }

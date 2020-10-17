@@ -37,5 +37,7 @@ class Validations {
             minLength(8)
             maxLength(320)
         }
+
+
     }
 }

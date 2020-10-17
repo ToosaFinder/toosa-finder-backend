@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component
 import java.security.Key
 import java.util.*
 
-data class Payload(val email: String, val refreshTokenId: Int)
+data class JwtPayload(val email: String, val refreshTokenId: Int)
 
 sealed class JwtTokenValidationResult {
-    data class Success(val payload: Payload) : JwtTokenValidationResult()
+    data class Success(val jwtPayload: JwtPayload) : JwtTokenValidationResult()
     object TokenExpired: JwtTokenValidationResult()
     object SignatureInvalid: JwtTokenValidationResult()
 }
@@ -28,7 +28,7 @@ class JwtTokenService(
     private val validityInMilliSeconds: Long
 
 ) {
-    fun generateToken(payload: Payload): String {
+    fun generateToken(jwtPayload: JwtPayload): String {
         val claims: Map<String, Any> = HashMap()
 
         val now = Date()
@@ -36,8 +36,8 @@ class JwtTokenService(
 
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(payload.email)
-            .setId(payload.refreshTokenId.toString())
+            .setSubject(jwtPayload.email)
+            .setId(jwtPayload.refreshTokenId.toString())
             .setIssuedAt(now)
             .setExpiration(validity)
             .signWith(getSigningKey())
@@ -47,7 +47,7 @@ class JwtTokenService(
     fun validateToken(token: String): JwtTokenValidationResult {
         return when (val parseClaimsJwsResult = getAllClaims(token)) {
             is ParseClaimsJwsResult.Success -> JwtTokenValidationResult.Success(
-                Payload(
+                JwtPayload(
                     parseClaimsJwsResult.claims.subject,
                     parseClaimsJwsResult.claims.id.toInt()
                 )

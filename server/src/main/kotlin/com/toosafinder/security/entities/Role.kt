@@ -8,10 +8,10 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "roles")
-internal class Role(
+class Role(
 
         @Column(name = "name")
-        val name: Name
+        val name: String
 
 ) : BaseEntity<Long>() {
 

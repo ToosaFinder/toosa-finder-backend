@@ -7,7 +7,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-internal class User(
+class User(
 
         @Column(name = "email")
         val email: String,
@@ -33,12 +33,13 @@ internal class User(
 
 }
 
-internal interface UserRepository: JpaRepository<User, Long> {
+interface UserRepository: JpaRepository<User, Long> {
 
         fun existsByLogin(login: String): Boolean
 
         fun existsByEmail(email: String): Boolean
 
         fun findByEmail(email: String): User?
+        fun findByLogin(email: String): User?
 
 }

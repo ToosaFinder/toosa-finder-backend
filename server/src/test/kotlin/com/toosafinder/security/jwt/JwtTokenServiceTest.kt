@@ -9,19 +9,19 @@ const val VALIDITY = 3600000L
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class JwtTokenServiceTest() {
-    private val payload: Payload = Payload("ivan_ivanov1337@gmail.com", 1)
+    private val jwtPayload: JwtPayload = JwtPayload("ivan_ivanov1337@gmail.com", 1)
 
     @Test
     @Order(1)
     fun `should return success validation result of generated token`() {
         val jwtTokenService = JwtTokenService(SECRET, VALIDITY)
 
-        val token = jwtTokenService.generateToken(payload)
+        val token = jwtTokenService.generateToken(jwtPayload)
 
         when (val validationResult = jwtTokenService.validateToken(token)) {
             is JwtTokenValidationResult.Success -> {
-                Assertions.assertEquals(this.payload.email, validationResult.payload.email)
-                Assertions.assertEquals(this.payload.refreshTokenId, validationResult.payload.refreshTokenId)
+                Assertions.assertEquals(this.jwtPayload.email, validationResult.jwtPayload.email)
+                Assertions.assertEquals(this.jwtPayload.refreshTokenId, validationResult.jwtPayload.refreshTokenId)
             }
         }
     }
@@ -32,7 +32,7 @@ class JwtTokenServiceTest() {
     fun `should return error validation result by expiration`() {
         val jwtTokenService = JwtTokenService(SECRET, SHORT_VALIDITY)
 
-        val token = jwtTokenService.generateToken(payload)
+        val token = jwtTokenService.generateToken(jwtPayload)
 
         //TODO: ну нах
         Thread.sleep(10)

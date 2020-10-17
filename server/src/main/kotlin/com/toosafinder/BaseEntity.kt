@@ -5,7 +5,7 @@ import java.io.Serializable
 import javax.persistence.*
 
 @MappedSuperclass
-internal open class BaseEntity<T : Serializable> {
+open class BaseEntity<T : Serializable> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -24,25 +24,10 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build with Gradle
         run: ./gradlew :server:build
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: test
-        run: |
-          pwd
-          ls -la
-          ls -la ./server
-          ls -la ./server/build
-          ls -la ./server/build/libs
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: toosafinder/toosafinder-back:latest
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: toosafinder/toosafinder-back
+          tag_with_ref: true

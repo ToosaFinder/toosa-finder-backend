@@ -5,9 +5,9 @@ server:
 
 spring:
   datasource:
-    username: postgres
-    password: 123321
-    url: jdbc:postgresql://localhost/toosafinder
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123321}
+    url: jdbc:postgresql://${DB_HOSTNAME:localhost}/toosafinder
     driver-class-name: org.postgresql.Driver
     hikari:
       connectionTimeout: 30000

@@ -33,4 +33,10 @@ internal class User(
 
 }
 
-internal interface UserRepository: JpaRepository<User, Long>
+internal interface UserRepository: JpaRepository<User, Long> {
+
+        fun existsByLogin(login: String): Boolean
+
+        fun existsByEmail(email: String): Boolean
+
+}

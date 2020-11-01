@@ -42,7 +42,6 @@ class WebSecurityConfigurer(
             .antMatchers("/user/set-password").permitAll()
             .antMatchers("/user/restore-password").permitAll()
             .antMatchers("/user/email-confirmed/**").permitAll()
-//              monke.give(banana);
 //            // MA endpoints
 //            .antMatchers("/user/mobile-app/token").hasAnyAuthority(Role.MOBILE_APP)
 //            .antMatchers(HttpMethod.GET, "/trading-pair/*/history").hasAnyAuthority(Role.MOBILE_APP)

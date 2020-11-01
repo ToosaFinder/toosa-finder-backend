@@ -31,3 +31,28 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: toosafinder/toosafinder-back
           tag_with_ref: true
+
+  deploy-gke:
+    name: Deploy to Google Kubernetes Engine
+    runs-on: ubuntu-latest
+    needs: pushImage
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Setup GKE CLI
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+      - name: Configure Docker to use the gcloud cl tool as a credential helper for authentication
+        run: |-
+          gcloud --quiet auth configure-docker
+      - name: Get the GKE credentials
+        run: |-
+          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }}
+      - name: Deploy
+        run: |-
+          kubectl apply -f ./deployments/toosa-backend.yaml
+          kubectl patch deployment toosa-frontend -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"${{ github.run_number }}\"}}}}}}"
+          kubectl apply -f ./deployments/load-balancer.yaml

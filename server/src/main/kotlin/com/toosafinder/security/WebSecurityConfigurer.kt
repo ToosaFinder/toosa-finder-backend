@@ -22,7 +22,10 @@ class WebSecurityConfigurer(
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http
-            .csrf().disable().cors().configurationSource{CorsConfiguration().applyPermitDefaultValues()}
+            .csrf()
+                .disable()
+                .cors()
+                    .configurationSource(corsConfigurationSource)
             .and()
             .headers().frameOptions().sameOrigin()
             .and()
@@ -55,21 +58,16 @@ class WebSecurityConfigurer(
             .anyRequest().authenticated()
     }
 
-    @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:8080")
-        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
-        configuration.allowedHeaders = listOf(
-            "Access-Control-Allow-Headers",
-            "Access-Control-Allow-Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers",
-            "Origin", "Cache-Control", "Content-Type")
-        return UrlBasedCorsConfigurationSource().apply {
-            registerCorsConfiguration("/**", configuration)
-        }
-    }
+    private val corsConfigurationSource: CorsConfigurationSource =
+            UrlBasedCorsConfigurationSource().apply {
+                registerCorsConfiguration(
+                        "/**",
+                        CorsConfiguration().apply {
+                            allowedOrigins = listOf("*")
+                            allowedMethods = listOf("*")
+                            allowedHeaders = listOf("*")
+                        })
+            }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()

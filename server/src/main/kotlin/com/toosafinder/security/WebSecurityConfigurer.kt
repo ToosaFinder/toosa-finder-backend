@@ -24,9 +24,6 @@ class WebSecurityConfigurer(
         http
             .csrf()
                 .disable()
-                .cors()
-                    .configurationSource(corsConfigurationSource)
-            .and()
             .headers().frameOptions().sameOrigin()
             .and()
             .formLogin()
@@ -58,16 +55,6 @@ class WebSecurityConfigurer(
             .anyRequest().authenticated()
     }
 
-    private val corsConfigurationSource: CorsConfigurationSource =
-            UrlBasedCorsConfigurationSource().apply {
-                registerCorsConfiguration(
-                        "/**",
-                        CorsConfiguration().apply {
-                            allowedOrigins = listOf("*")
-                            allowedMethods = listOf("*")
-                            allowedHeaders = listOf("*")
-                        })
-            }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()

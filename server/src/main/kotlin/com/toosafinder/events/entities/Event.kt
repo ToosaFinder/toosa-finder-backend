@@ -36,10 +36,10 @@ class Event(
         val startTime: LocalDateTime,
 
         @Column(name = "is_public")
-        val isPublic: Boolean,
+        val public: Boolean,
 
         @Column(name = "is_closed")
-        val isClosed: Boolean
+        val closed: Boolean
 
 ) : BaseEntity<Long>() {
 
@@ -69,4 +69,6 @@ class Event(
 
 }
 
-interface EventRepository: JpaRepository<Event, Long>
+interface EventRepository: JpaRepository<Event, Long> {
+        fun getAllByClosedIsFalse(): List<Event>
+}

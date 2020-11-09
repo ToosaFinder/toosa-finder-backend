@@ -24,6 +24,8 @@ class WebSecurityConfigurer(
         http
             .csrf()
                 .disable()
+                .cors().configurationSource(corsConfigurationSource)
+            .and()
             .headers().frameOptions().sameOrigin()
             .and()
             .formLogin()
@@ -42,19 +44,18 @@ class WebSecurityConfigurer(
             .antMatchers("/user/set-password").permitAll()
             .antMatchers("/user/restore-password").permitAll()
             .antMatchers("/user/email-confirmed/**").permitAll()
-//              monke.give(banana);
-//            // MA endpoints
-//            .antMatchers("/user/mobile-app/token").hasAnyAuthority(Role.MOBILE_APP)
-//            .antMatchers(HttpMethod.GET, "/trading-pair/*/history").hasAnyAuthority(Role.MOBILE_APP)
-//            .antMatchers("/trading-pairs").hasAnyAuthority(Role.MOBILE_APP)
-//
-//            // Bot endpoints
-//            .antMatchers("/user/notification").hasAnyAuthority(Role.BOT)
-//            .antMatchers("/user/pairs").hasAnyAuthority(Role.BOT)
-//            .antMatchers(HttpMethod.POST, "/trading-pair/*/history").hasAnyAuthority(Role.BOT)
             .anyRequest().authenticated()
     }
 
+    private val corsConfigurationSource: CorsConfigurationSource =
+            UrlBasedCorsConfigurationSource().apply {
+                registerCorsConfiguration(
+                        "/**",
+                        CorsConfiguration()
+                                .applyPermitDefaultValues()
+                                .apply { allowedMethods = listOf("*") }
+                )
+            }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()

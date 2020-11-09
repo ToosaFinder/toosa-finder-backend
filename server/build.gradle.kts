@@ -70,6 +70,10 @@ tasks {
         group = "verification"
         useJUnitPlatform()
     }
+    bootRun {
+        @Suppress("UNCHECKED_CAST")
+        systemProperties(System.getProperties() as Map<String, String>)
+    }
 }
 
 configurations {

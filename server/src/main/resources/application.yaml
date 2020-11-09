@@ -3,6 +3,10 @@ server:
   error:
     include-message: always
 
+logging:
+  level:
+    ROOT: info
+
 spring:
   datasource:
     username: ${DB_USERNAME:postgres}
@@ -41,9 +45,8 @@ email-tokens:
   expiration-time: 14d
 
 email:
-  #TODO ждем нормальные ссылки
-  email-confirmation-url: http://example.org
-  password-restore-url: http://example.org
+  email-confirmation-url: http://localhost:3000/user/confirm-email
+  password-restore-url: http://localhost:3000/user/restore-password
   templates:
     email-confirmation-template-file-path:
       /static/templates/emailConfirmationMessage

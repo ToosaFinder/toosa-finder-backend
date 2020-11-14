@@ -16,7 +16,7 @@ spring:
     hikari:
       connectionTimeout: 30000
       idleTimeout: 600000
-      maxLifetime: 1800000
+      maxLifetime: 1800001
   jpa:
     hibernate:
       ddl-auto: none

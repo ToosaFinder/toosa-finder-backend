@@ -28,6 +28,8 @@ spec:
             - name: DB_PASSWORD
               value: toosafinder
             - name: DB_HOSTNAME
-              value: 35.222.191.158
+              value: 34.67.129.19
+            - name: DB_PORT
+              value: 5433
           ports:
             - containerPort: 8081

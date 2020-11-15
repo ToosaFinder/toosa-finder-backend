@@ -1,6 +1,6 @@
 package com.toosafinder.events
 
-import com.toosafinder.api.events.GetTagsRes
+import com.toosafinder.api.events.PopularTagRes
 import com.toosafinder.events.entities.EventRepository
 import com.toosafinder.events.entities.Tag
 import com.toosafinder.events.entities.TagRepository
@@ -20,11 +20,11 @@ private class EventController(
 
     private val log by LoggerProperty()
 
-    @GetMapping("/tags")
-    fun getAllTags(): ResponseEntity<GetTagsRes> {
-        log.trace("Fetching all event tags");
-        val tags = eventService.getAllTags().map(EventMapper::toTagDto)
-        return HTTP.ok(GetTagsRes(tags))
+    @GetMapping("/tag/popular")
+    fun getPopularTags(): ResponseEntity<PopularTagRes> {
+        log.trace("Fetching popular tags");
+        val tags = eventService.getPopularTags().map(EventMapper::toTagDto)
+        return HTTP.ok(PopularTagRes(tags))
     }
 }
 
@@ -34,7 +34,10 @@ private class EventService(
     private val tagRepository: TagRepository
 ) {
 
-    fun getAllTags(): List<Tag> = tagRepository.findAllByOrderByPopularityDesc()
+    fun getPopularTags(): List<Tag> =
+        tagRepository
+            .findAllByOrderByPopularityDesc()
+            .filterIndexed { index, _ -> index < 100 }
 }
 
 private class EventMapper {

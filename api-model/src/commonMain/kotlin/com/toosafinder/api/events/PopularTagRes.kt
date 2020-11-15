@@ -1,5 +1,5 @@
 package com.toosafinder.api.events
 
-data class GetTagsRes (
+data class PopularTagRes (
     val tags: List<String>
 )

@@ -18,9 +18,9 @@ class Tag(
 
 interface TagRepository: JpaRepository<Tag, Long> {
 
-    @Query("select t" +
-            " from Event e right outer join e.tags t" +
-            " group by t" +
-            " order by count(t) desc")
-    fun findAllByOrderByPopularityDesc(): List<Tag>
+    @Query("select t.id, t.name" +
+            " from events_tags et right outer join tags t on et.tag_id=t.id" +
+            " group by id" +
+            " order by count(id) desc limit ?1", nativeQuery = true)
+    fun findTopByPopularityByOrderDesc(amount: Int): List<Tag>
 }

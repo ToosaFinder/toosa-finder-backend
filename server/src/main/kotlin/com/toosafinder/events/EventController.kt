@@ -35,9 +35,7 @@ private class EventService(
 ) {
 
     fun getPopularTags(): List<Tag> =
-        tagRepository
-            .findAllByOrderByPopularityDesc()
-            .filterIndexed { index, _ -> index < 100 }
+        tagRepository.findTopByPopularityByOrderDesc(100)
 }
 
 private class EventMapper {

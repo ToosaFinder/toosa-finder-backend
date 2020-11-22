@@ -1,6 +1,6 @@
 package com.toosafinder.events
 
-import com.toosafinder.api.events.EventDto
+import com.toosafinder.api.events.EventRes
 import com.toosafinder.api.events.GetEventsRes
 import com.toosafinder.events.entities.Event
 import com.toosafinder.events.entities.EventRepository
@@ -25,7 +25,7 @@ private class EventController(
     @GetMapping
     fun getActiveEvents(): ResponseEntity<GetEventsRes> {
         log.debug("Fetching all active events")
-        val events = eventService.getActiveEvents().map(EventMapper::toDto)
+        val events = eventService.getActiveEvents().map(Event::toDto)
         return HTTP.ok(GetEventsRes(events))
     }
 
@@ -41,23 +41,18 @@ private class EventService(
 
 }
 
-private class EventMapper {
-
-    companion object {
-        fun toDto(e: Event) = EventDto (
-            name = e.name,
-            creator = e.creator.login,
-            description = e.description,
-            address = e.address,
-            latitude = e.latitude,
-            longitude = e.longitude,
-            participantsLimit = e.participantsLimit,
-            startTime = e.startTime,
-            isPublic = e.public,
-            isClosed = e.closed,
-            participants = e.participants.map(User::login),
-            tags = e.tags.map(Tag::name)
-        )
-    }
-
-}
+private fun Event.toDto() = EventRes (
+    id = id!!,
+    name = name,
+    creator = creator.login,
+    description = description,
+    address = address,
+    latitude = latitude,
+    longitude = longitude,
+    participantsLimit = participantsLimit,
+    startTime = startTime,
+    isPublic = public,
+    isClosed = closed,
+    participants = participants.map(User::login),
+    tags = tags.map(Tag::name)
+)

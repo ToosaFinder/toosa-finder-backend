@@ -2,7 +2,9 @@ package com.toosafinder.api.events
 
 import java.time.LocalDateTime
 
-data class EventDto(
+data class EventRes(
+        val id: Long,
+
         val name: String,
 
         val creator: String,

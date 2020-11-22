@@ -13,35 +13,26 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/event")
-private class EventController(
-    private val eventService: EventService
+@RequestMapping("/event/tag")
+private class TagController(
+    private val tagService: TagService
 ) {
 
     private val log by LoggerProperty()
 
-    @GetMapping("/tag/popular")
+    @GetMapping("/popular")
     fun getPopularTags(): ResponseEntity<PopularTagRes> {
         log.trace("Fetching popular tags");
-        val tags = eventService.getPopularTags().map(EventMapper::toTagDto)
+        val tags = tagService.getPopularTags().map(Tag::name)
         return HTTP.ok(PopularTagRes(tags))
     }
 }
 
 @Service
-private class EventService(
-    private val eventRepository: EventRepository,
+private class TagService(
     private val tagRepository: TagRepository
 ) {
 
     fun getPopularTags(): List<Tag> =
         tagRepository.findTopByPopularityByOrderDesc(100)
-}
-
-private class EventMapper {
-
-    companion object {
-
-        fun toTagDto(tag: Tag) = tag.name
-    }
 }

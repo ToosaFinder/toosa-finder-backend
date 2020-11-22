@@ -1,5 +1,6 @@
 package com.toosafinder.security
 
+import com.toosafinder.security.entities.Role
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -44,6 +45,9 @@ class WebSecurityConfigurer(
             .antMatchers("/user/set-password").permitAll()
             .antMatchers("/user/restore-password").permitAll()
             .antMatchers("/user/email-confirmed/**").permitAll()
+
+            .antMatchers("/event/tag/popular").hasAuthority(Role.Name.USER.name)
+            .antMatchers("/event").hasAuthority(Role.Name.USER.name)
             .anyRequest().authenticated()
     }
 

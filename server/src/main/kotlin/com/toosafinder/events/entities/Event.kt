@@ -36,14 +36,14 @@ class Event(
         val startTime: LocalDateTime,
 
         @Column(name = "is_public")
-        val isPublic: Boolean,
+        val public: Boolean,
 
         @Column(name = "is_closed")
-        val isClosed: Boolean
+        val closed: Boolean
 
 ) : BaseEntity<Long>() {
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         @JoinTable(
                 name = "events_tags",
                 joinColumns = [JoinColumn(name = "event_id")],
@@ -51,7 +51,7 @@ class Event(
         )
         val tags: MutableSet<Tag> = hashSetOf()
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         @JoinTable(
             name = "events_participants",
             joinColumns = [JoinColumn(name = "event_id")],
@@ -59,7 +59,7 @@ class Event(
         )
         val participants: MutableSet<User> = hashSetOf()
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         @JoinTable(
                 name = "events_administrators",
                 joinColumns = [JoinColumn(name = "event_id")],
@@ -69,4 +69,6 @@ class Event(
 
 }
 
-interface EventRepository: JpaRepository<Event, Long>
+interface EventRepository: JpaRepository<Event, Long> {
+        fun getAllByClosedIsFalse(): List<Event>
+}

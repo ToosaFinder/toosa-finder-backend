@@ -20,8 +20,8 @@ class TcsAuthHeaderFilter(
     private class TcsAuthenticationConverter : AuthenticationConverter {
 
         override fun convert(request: HttpServletRequest): TokenAuthentication? =
-            request.getHeader("X-Tcs-Token")
-                ?.let { TokenAuthentication(it) }
+            request.getHeader("Authorization")
+                ?.let { TokenAuthentication(it.removePrefix("Bearer ")) }
     }
 }
 

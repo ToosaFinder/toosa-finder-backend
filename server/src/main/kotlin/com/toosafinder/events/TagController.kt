@@ -1,7 +1,6 @@
 package com.toosafinder.events
 
 import com.toosafinder.api.events.PopularTagRes
-import com.toosafinder.events.entities.EventRepository
 import com.toosafinder.events.entities.Tag
 import com.toosafinder.events.entities.TagRepository
 import com.toosafinder.logging.LoggerProperty

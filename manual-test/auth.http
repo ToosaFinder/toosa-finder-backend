@@ -66,3 +66,6 @@ Content-Type: application/json
 GET http://{{host}}:{{port}}/event/tag/popular
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc
 
+### Active events
+GET http://{{host}}:{{port}}/event
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc

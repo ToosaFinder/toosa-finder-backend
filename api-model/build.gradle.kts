@@ -1,18 +1,15 @@
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
     `maven-publish`
 }
 
-kotlin {
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+}
 
-    jvm()
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-common"))
-            }
-        }
+tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 

@@ -45,6 +45,14 @@ class Event(
 
         @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
         @JoinTable(
+                name = "events_tags",
+                joinColumns = [JoinColumn(name = "event_id")],
+                inverseJoinColumns = [JoinColumn(name = "tag_id")]
+        )
+        val tags: MutableSet<Tag> = hashSetOf()
+
+        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @JoinTable(
             name = "events_participants",
             joinColumns = [JoinColumn(name = "event_id")],
             inverseJoinColumns = [JoinColumn(name = "participant_id")]

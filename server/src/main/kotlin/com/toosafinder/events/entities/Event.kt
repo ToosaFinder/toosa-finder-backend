@@ -39,10 +39,8 @@ class Event(
         val public: Boolean,
 
         @Column(name = "is_closed")
-        val closed: Boolean
-
+        val closed: Boolean,
 ) : BaseEntity<Long>() {
-
         @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         @JoinTable(
                 name = "events_tags",

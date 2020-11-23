@@ -45,7 +45,7 @@ email-tokens:
   expiration-time: 14d
 
 email:
-  email-confirmation-url: http://localhost:3000/user/confirm-email
+  email-confirmation-url: http://localhost:3000/user/email-confirmed
   password-restore-url: http://localhost:3000/user/restore-password
   templates:
     email-confirmation-template-file-path:

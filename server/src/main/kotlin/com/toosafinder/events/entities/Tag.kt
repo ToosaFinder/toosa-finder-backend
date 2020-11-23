@@ -23,4 +23,6 @@ interface TagRepository: JpaRepository<Tag, Long> {
             " group by id" +
             " order by count(id) desc limit ?1", nativeQuery = true)
     fun findTopByPopularityByOrderDesc(amount: Int): List<Tag>
+
+    fun findByName(name: String): Tag?
 }

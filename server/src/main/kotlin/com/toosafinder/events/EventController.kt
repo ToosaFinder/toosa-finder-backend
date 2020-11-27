@@ -1,32 +1,18 @@
 package com.toosafinder.events
 
-import com.toosafinder.api.events.EventDeletionErrors
-import com.toosafinder.api.events.EventRes
-import com.toosafinder.api.events.GetEventsRes
-import com.toosafinder.events.entities.Event
-import com.toosafinder.events.entities.EventRepository
-import com.toosafinder.events.entities.Tag
 import com.toosafinder.api.events.EventCreationErrors
 import com.toosafinder.api.events.EventCreationReq
 import com.toosafinder.api.events.EventCreationRes
+import com.toosafinder.api.events.EventDeletionErrors
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.AuthorizedUserInfo
-import com.toosafinder.security.entities.User
-import com.toosafinder.security.entities.UserRepository
 import com.toosafinder.webcommon.HTTP
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/event")
@@ -99,10 +85,14 @@ private class EventService(
                 newEvent.tags.add(tag)
             }
         }
+
+        return EventCreationResult.Success(newEvent.id!!, newEvent)
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun deleteEvent(eventId: Long, authorizedUserId: Long): EventDeletionResult {
         val event = eventRepository.findById(eventId)
-                .orElse(null) ?: return EventDeletionResult.EventNotFound
+            .orElse(null) ?: return EventDeletionResult.EventNotFound
 
         val creatorId = event.creator.id!!
         if (creatorId != authorizedUserId) {
@@ -111,21 +101,6 @@ private class EventService(
 
         eventRepository.delete(event)
         return EventDeletionResult.Success
-    }
-
-}
-
-sealed class EventDeletionResult {
-
-    object Success: EventDeletionResult()
-
-    object EventNotFound: EventDeletionResult()
-
-    object BadPermissions: EventDeletionResult()
-
-}
-
-        return EventCreationResult.Success(newEvent.id!!, newEvent)
     }
 }
 
@@ -145,4 +120,14 @@ private fun EventCreationReq.toEvent(creator: Participant) = Event (
 sealed class EventCreationResult {
     data class Success(val id: Long, val event: Event) : EventCreationResult()
     object UserNotFound : EventCreationResult()
+}
+
+sealed class EventDeletionResult {
+
+    object Success: EventDeletionResult()
+
+    object EventNotFound: EventDeletionResult()
+
+    object BadPermissions: EventDeletionResult()
+
 }

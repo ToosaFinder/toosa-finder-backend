@@ -15,7 +15,7 @@ class Event(
 
         @ManyToOne
         @JoinColumn(name = "creator_id")
-        val creator: User,
+        val creator: Participant,
 
         @Column(name = "description")
         val description: String,

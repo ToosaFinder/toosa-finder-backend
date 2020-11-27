@@ -1,0 +1,51 @@
+### event creation: user not found error
+POST http://{{host}}:{{port}}/event
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjQ3ODExNSwiZXhwIjoxNjA2NDgxNzE1fQ.oLkN6xNcjIAUFoYrC4naWjZfS6hU4XlFN2ES5ei7q3Y
+Content-Type: application/json
+
+{
+  "name": "Happy New Year",
+  "creator": "badLogin",
+  "description": "Happy New Year Celebration",
+  "address": "Pirogova, 4",
+  "latitude": 0.1,
+  "longitude": 0.1,
+  "participantsLimit": 20,
+  "startTime": "2018-11-21T11:13:13.274",
+  "isPublic": false,
+  "tags": [
+    "testtag1",
+    "testtag2",
+    "testtag3"
+  ]
+}
+
+### event creation: OK
+POST http://{{host}}:{{port}}/event
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjQ3ODExNSwiZXhwIjoxNjA2NDgxNzE1fQ.oLkN6xNcjIAUFoYrC4naWjZfS6hU4XlFN2ES5ei7q3Y
+Content-Type: application/json
+
+{
+  "name": "Happy New Year",
+  "creator": "test1",
+  "description": "Happy New Year Celebration",
+  "address": "Pirogova, 4",
+  "latitude": 0.1,
+  "longitude": 0.1,
+  "participantsLimit": 20,
+  "startTime": "2018-11-21T11:13:13.274",
+  "isPublic": false,
+  "tags": [
+    "testtag1",
+    "testtag2",
+    "testtag3"
+  ]
+}
+
+### popular tags
+GET http://{{host}}:{{port}}/event/tag/popular
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc
+
+### active events
+GET http://{{host}}:{{port}}/event
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc

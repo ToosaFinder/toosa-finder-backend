@@ -1,15 +1,27 @@
 package com.toosafinder.events
 
+import com.toosafinder.api.events.EventDeletionErrors
+import com.toosafinder.api.events.EventRes
+import com.toosafinder.api.events.GetEventsRes
+import com.toosafinder.events.entities.Event
+import com.toosafinder.events.entities.EventRepository
+import com.toosafinder.events.entities.Tag
 import com.toosafinder.api.events.EventCreationErrors
 import com.toosafinder.api.events.EventCreationReq
 import com.toosafinder.api.events.EventCreationRes
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
+import com.toosafinder.security.AuthorizedUserInfo
 import com.toosafinder.security.entities.User
 import com.toosafinder.security.entities.UserRepository
 import com.toosafinder.webcommon.HTTP
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -48,6 +60,24 @@ private class EventController(
             )
         }
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
+        val authorizedUserId = AuthorizedUserInfo.getUserId()
+        log.debug("User #$authorizedUserId tries to delete event #$eventId")
+        return when (eventService.deleteEvent(eventId, authorizedUserId)) {
+            is EventDeletionResult.Success -> HTTP.ok()
+            is EventDeletionResult.EventNotFound -> HTTP.conflict(
+                code = EventDeletionErrors.EVENT_NOT_FOUND.name,
+                message = "Event was not found"
+            )
+            is EventDeletionResult.BadPermissions -> HTTP.conflict(
+                code = EventDeletionErrors.BAD_PERMISSIONS.name,
+                message = "Authorized user is not owner of the specified event"
+            )
+        }
+    }
+
 }
 
 @Service
@@ -69,6 +99,31 @@ private class EventService(
                 newEvent.tags.add(tag)
             }
         }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun deleteEvent(eventId: Long, authorizedUserId: Long): EventDeletionResult {
+        val event = eventRepository.findById(eventId)
+                .orElse(null) ?: return EventDeletionResult.EventNotFound
+
+        val creatorId = event.creator.id!!
+        if (creatorId != authorizedUserId) {
+            return EventDeletionResult.BadPermissions
+        }
+
+        eventRepository.delete(event)
+        return EventDeletionResult.Success
+    }
+
+}
+
+sealed class EventDeletionResult {
+
+    object Success: EventDeletionResult()
+
+    object EventNotFound: EventDeletionResult()
+
+    object BadPermissions: EventDeletionResult()
+
+}
 
         return EventCreationResult.Success(newEvent.id!!, newEvent)
     }

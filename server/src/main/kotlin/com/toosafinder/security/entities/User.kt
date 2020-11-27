@@ -23,7 +23,10 @@ class User(
 
 ) : BaseEntity<Long>() {
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @ManyToMany(
+                cascade = [CascadeType.PERSIST, CascadeType.MERGE],
+                fetch = FetchType.EAGER
+        )
         @JoinTable(
                 name = "users_roles",
                 joinColumns = [JoinColumn(name = "user_id")],

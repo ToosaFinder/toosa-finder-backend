@@ -3,10 +3,7 @@ package com.toosafinder.events
 import com.toosafinder.api.events.EventCreationErrors
 import com.toosafinder.api.events.EventCreationReq
 import com.toosafinder.api.events.EventCreationRes
-import com.toosafinder.events.entities.Event
-import com.toosafinder.events.entities.EventRepository
-import com.toosafinder.events.entities.Tag
-import com.toosafinder.events.entities.TagRepository
+import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.entities.User
 import com.toosafinder.security.entities.UserRepository
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/event")
@@ -32,12 +30,21 @@ private class EventController(
         return when (val eventCreationResult = eventService.createEvent(event)) {
             is EventCreationResult.Success -> HTTP.ok(
                 EventCreationRes(
-                    eventId = eventCreationResult.eventId,
-                    eventCreationReq = event
+                    id = eventCreationResult.id,
+                    name = eventCreationResult.event.name,
+                    creator = eventCreationResult.event.creator.login,
+                    description = eventCreationResult.event.description,
+                    address = eventCreationResult.event.address,
+                    latitude = eventCreationResult.event.latitude,
+                    longitude = eventCreationResult.event.longitude,
+                    participantsLimit = eventCreationResult.event.participantsLimit,
+                    startTime = eventCreationResult.event.startTime,
+                    isPublic = eventCreationResult.event.public,
+                    tags = eventCreationResult.event.tags.map(Tag::name)
                 )
             )
             is EventCreationResult.UserNotFound -> HTTP.conflict(
-                code = EventCreationErrors.USER_BY_LOGIN_NOT_FOUND.name
+                code = EventCreationErrors.USER_NOT_FOUND.name
             )
         }
     }
@@ -47,11 +54,11 @@ private class EventController(
 private class EventService(
     private val eventRepository: EventRepository,
     private val tagRepository: TagRepository,
-    private val userRepository: UserRepository
+    private val participantRepository: ParticipantRepository
 ) {
     fun createEvent(event: EventCreationReq): EventCreationResult {
-        val creator = userRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
-        val newEvent = eventRepository.save(EventMapper.toEvent(event, creator))
+        val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
+        val newEvent = eventRepository.save(event.toEvent(creator))
 
         for (tagName in event.tags) {
             val tag = tagRepository.findByName(tagName)
@@ -63,28 +70,24 @@ private class EventService(
             }
         }
 
-        return EventCreationResult.Success(newEvent.id)
+        return EventCreationResult.Success(newEvent.id!!, newEvent)
     }
 }
 
-private class EventMapper {
-    companion object {
-        fun toEvent(event: EventCreationReq, creator: User) = Event(
-            event.name,
-            creator,
-            event.description,
-            event.address,
-            event.latitude,
-            event.longitude,
-            event.participantsLimit,
-            event.startTime,
-            event.isPublic,
-            false,
-        )
-    }
-}
+private fun EventCreationReq.toEvent(creator: Participant) = Event (
+        name,
+        creator,
+        description,
+        address,
+        latitude,
+        longitude,
+        participantsLimit,
+        startTime,
+        isPublic,
+        false,
+)
 
 sealed class EventCreationResult {
-    data class Success(val eventId: Long?) : EventCreationResult()
+    data class Success(val id: Long, val event: Event) : EventCreationResult()
     object UserNotFound : EventCreationResult()
 }

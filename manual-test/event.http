@@ -1,6 +1,6 @@
 ### event creation: user not found error
 POST http://{{host}}:{{port}}/event
-Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjEyNzUxNSwiZXhwIjoxNjA2MTMxMTE1fQ.Yfilu2uVEFq0Fu0LyDoeafr2D0XQCudn6mzEN8k_uGw
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjQ3ODExNSwiZXhwIjoxNjA2NDgxNzE1fQ.oLkN6xNcjIAUFoYrC4naWjZfS6hU4XlFN2ES5ei7q3Y
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ### event creation: OK
 POST http://{{host}}:{{port}}/event
-Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjEyNzUxNSwiZXhwIjoxNjA2MTMxMTE1fQ.Yfilu2uVEFq0Fu0LyDoeafr2D0XQCudn6mzEN8k_uGw
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuLmJhaXJhbW92QGcubnN1LnJ1IiwianRpIjoiMSIsImlhdCI6MTYwNjQ3ODExNSwiZXhwIjoxNjA2NDgxNzE1fQ.oLkN6xNcjIAUFoYrC4naWjZfS6hU4XlFN2ES5ei7q3Y
 Content-Type: application/json
 
 {

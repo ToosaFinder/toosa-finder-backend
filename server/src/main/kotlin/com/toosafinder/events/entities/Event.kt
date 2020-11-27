@@ -43,7 +43,10 @@ class Event(
 
 ) : BaseEntity<Long>() {
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @ManyToMany(
+                cascade = [CascadeType.PERSIST, CascadeType.MERGE],
+                fetch = FetchType.EAGER
+        )
         @JoinTable(
                 name = "events_tags",
                 joinColumns = [JoinColumn(name = "event_id")],
@@ -51,7 +54,10 @@ class Event(
         )
         val tags: MutableSet<Tag> = hashSetOf()
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @ManyToMany(
+                cascade = [CascadeType.PERSIST, CascadeType.MERGE],
+                fetch = FetchType.EAGER
+        )
         @JoinTable(
             name = "events_participants",
             joinColumns = [JoinColumn(name = "event_id")],
@@ -59,7 +65,10 @@ class Event(
         )
         val participants: MutableSet<User> = hashSetOf()
 
-        @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @ManyToMany(
+                cascade = [CascadeType.PERSIST, CascadeType.MERGE],
+                fetch = FetchType.EAGER
+        )
         @JoinTable(
                 name = "events_administrators",
                 joinColumns = [JoinColumn(name = "event_id")],

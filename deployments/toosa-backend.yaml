@@ -31,5 +31,7 @@ spec:
               value: 34.67.129.19
             - name: DB_PORT
               value: "5433"
+            - name: SPRING_PROFILES_ACTIVE
+              value: test
           ports:
             - containerPort: 8081

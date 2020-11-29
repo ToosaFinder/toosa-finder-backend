@@ -1,13 +1,12 @@
 package com.toosafinder.events
 
-import com.toosafinder.api.events.EventCreationErrors
-import com.toosafinder.api.events.EventCreationReq
-import com.toosafinder.api.events.EventCreationRes
-import com.toosafinder.api.events.EventDeletionErrors
+import com.toosafinder.api.events.*
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.AuthorizedUserInfo
+import com.toosafinder.security.entities.User
 import com.toosafinder.webcommon.HTTP
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
@@ -20,6 +19,25 @@ private class EventController(
     private val eventService: EventService
 ) {
     private val log by LoggerProperty()
+
+    @GetMapping("/{id}")
+    fun getEvent(@PathVariable id: Long): ResponseEntity<*> {
+        log.trace("Fetching event with id $id")
+
+        return when (val eventFetchingResult = eventService.getEvent(id)) {
+            is EventFetchingResult.Success -> HTTP.ok(eventFetchingResult.event.toDto())
+            is EventFetchingResult.EventNotFound -> HTTP.conflict(
+                code = GetEventErrors.EVENT_NOT_FOUND.name
+            )
+        }
+    }
+
+    @GetMapping
+    fun getActiveEvents(): ResponseEntity<GetEventsRes> {
+        log.debug("Fetching all active events")
+        val events = eventService.getAllActiveEvents().map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
 
     @PostMapping()
     fun createEvent(@RequestBody event: EventCreationReq): ResponseEntity<*> {
@@ -72,6 +90,19 @@ private class EventService(
     private val tagRepository: TagRepository,
     private val participantRepository: ParticipantRepository
 ) {
+
+    fun getEvent(id: Long): EventFetchingResult {
+        val event = eventRepository.findByIdOrNull(id)
+
+        return if (event != null) {
+            EventFetchingResult.Success(event)
+        } else {
+            EventFetchingResult.EventNotFound
+        }
+    }
+
+    fun getAllActiveEvents(): List<Event> = eventRepository.getAllByClosedIsFalse()
+
     fun createEvent(event: EventCreationReq): EventCreationResult {
         val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
         val newEvent = eventRepository.save(event.toEvent(creator))
@@ -104,6 +135,22 @@ private class EventService(
     }
 }
 
+private fun Event.toDto() = GetEventRes (
+    id = id!!,
+    name = name,
+    creator = creator.login,
+    description = description,
+    address = address,
+    latitude = latitude,
+    longitude = longitude,
+    participantsLimit = participantsLimit,
+    startTime = startTime,
+    isPublic = public,
+    isClosed = closed,
+    participants = participants.map(User::login),
+    tags = tags.map(Tag::name)
+)
+
 private fun EventCreationReq.toEvent(creator: Participant) = Event (
         name,
         creator,
@@ -117,8 +164,17 @@ private fun EventCreationReq.toEvent(creator: Participant) = Event (
         false,
 )
 
+sealed class EventFetchingResult {
+
+    data class Success(val event: Event): EventFetchingResult()
+
+    object EventNotFound: EventFetchingResult()
+}
+
 sealed class EventCreationResult {
+
     data class Success(val id: Long, val event: Event) : EventCreationResult()
+
     object UserNotFound : EventCreationResult()
 }
 

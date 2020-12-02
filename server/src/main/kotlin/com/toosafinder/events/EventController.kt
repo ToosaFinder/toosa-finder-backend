@@ -1,6 +1,11 @@
 package com.toosafinder.events
 
 import com.toosafinder.api.events.*
+import com.toosafinder.api.events.EventCreationErrors
+import com.toosafinder.api.events.EventCreationReq
+import com.toosafinder.api.events.EventCreationRes
+import com.toosafinder.api.events.EventDeletionErrors
+import com.toosafinder.api.events.GetEventsRes
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.AuthorizedUserInfo
@@ -79,6 +84,22 @@ private class EventController(
                     message = "Authorized user is not owner of the specified event"
             )
         }
+    }
+
+    @GetMapping("/my/admin")
+    fun getAdministeredEvents(): ResponseEntity<GetEventsRes> {
+        val authorizedUserId = AuthorizedUserInfo.getUserId()
+        log.debug("Fetching events administered by user #$authorizedUserId")
+        val events = eventService.getAdministeredEvents(authorizedUserId).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
+
+    @GetMapping("/my/participant")
+    fun getActiveEventsUserTakesPartIn(): ResponseEntity<GetEventsRes> {
+        val authorizedUserId = AuthorizedUserInfo.getUserId()
+        log.debug("Fetching events user #$authorizedUserId takes part in")
+        val events = eventService.getActiveEventsUserTakesPartIn(authorizedUserId).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
     }
 
 
@@ -181,6 +202,15 @@ private class EventService(
 
         return ParticipantDetachingResult.Success
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getAdministeredEvents(userId: Long): List<Event> =
+            eventRepository.getAdministeredEvents(userId)
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getActiveEventsUserTakesPartIn(userId: Long): List<Event> =
+            eventRepository.getActiveEventsUserTakesPartIn(userId)
+
 }
 
 private fun Event.toDto() = GetEventRes(
@@ -196,7 +226,8 @@ private fun Event.toDto() = GetEventRes(
         isPublic = isPublic,
         isClosed = isClosed,
         participants = participants.map(Participant::login),
-        tags = tags.map(Tag::name))
+        tags = tags.map(Tag::name)
+)
 
 private fun EventCreationReq.toEvent(creator: Participant) = Event(
         name,

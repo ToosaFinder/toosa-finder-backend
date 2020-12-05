@@ -101,7 +101,7 @@ private class EventService(
         }
     }
 
-    fun getAllActiveEvents(): List<Event> = eventRepository.getAllByClosedIsFalse()
+    fun getAllActiveEvents(): List<Event> = eventRepository.getAllByIsClosedIsFalse()
 
     fun createEvent(event: EventCreationReq): EventCreationResult {
         val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound

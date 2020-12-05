@@ -79,5 +79,5 @@ class Event(
 }
 
 interface EventRepository: JpaRepository<Event, Long> {
-        fun getAllByClosedIsFalse(): List<Event>
+        fun getAllByIsClosedIsFalse(): List<Event>
 }

@@ -149,9 +149,11 @@ private class EventService(
 
     fun getAllActiveEvents(): List<Event> = eventRepository.getAllByIsClosedIsFalse()
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun createEvent(event: EventCreationReq): EventCreationResult {
         val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
         val newEvent = eventRepository.save(event.toEvent(creator))
+        newEvent.administrators.add(creator)
 
         for (tagName in event.tags) {
             val tag = tagRepository.findByName(tagName)

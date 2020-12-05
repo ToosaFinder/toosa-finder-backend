@@ -81,20 +81,26 @@ class Event(
 
 interface EventRepository: JpaRepository<Event, Long> {
 
+        fun getAllByIsClosedIsFalse(): List<Event>
+
         @Query(
-                "select e " +
-                "from Event e " +
-                "join e.administrators a " +
-                "where a.id = :userId"
+                """
+                    select e
+                    from Event e
+                    join e.administrators a
+                    where a.id = :userId
+                """
         )
         fun getAdministeredEvents(@Param("userId") userId: Long): List<Event>
 
         @Query(
-                "select e " +
-                        "from Event e " +
-                        "join e.participants p " +
-                        "where p.id = :userId " +
-                        "and e.isClosed = false"
+                """
+                    select e
+                    from Event e
+                    join e.participants p
+                    where p.id = :userId
+                    and e.isClosed = false
+                """
         )
         fun getActiveEventsUserTakesPartIn(@Param("userId") userId: Long): List<Event>
 

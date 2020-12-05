@@ -37,7 +37,7 @@ private class EventController(
                     longitude = eventCreationResult.event.longitude,
                     participantsLimit = eventCreationResult.event.participantsLimit,
                     startTime = eventCreationResult.event.startTime,
-                    isPublic = eventCreationResult.event.public,
+                    isPublic = eventCreationResult.event.isPublic,
                     tags = eventCreationResult.event.tags.map(Tag::name)
                 )
             )

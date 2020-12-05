@@ -55,7 +55,7 @@ private class EventController(
                     longitude = eventCreationResult.event.longitude,
                     participantsLimit = eventCreationResult.event.participantsLimit,
                     startTime = eventCreationResult.event.startTime,
-                    isPublic = eventCreationResult.event.public,
+                    isPublic = eventCreationResult.event.isPublic,
                     tags = eventCreationResult.event.tags.map(Tag::name)
                 )
             )
@@ -145,8 +145,8 @@ private fun Event.toDto() = GetEventRes (
     longitude = longitude,
     participantsLimit = participantsLimit,
     startTime = startTime,
-    isPublic = public,
-    isClosed = closed,
+    isPublic = isPublic,
+    isClosed = isClosed,
     participants = participants.map(User::login),
     tags = tags.map(Tag::name)
 )

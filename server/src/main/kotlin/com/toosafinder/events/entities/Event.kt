@@ -36,10 +36,10 @@ class Event(
         val startTime: LocalDateTime,
 
         @Column(name = "is_public")
-        val public: Boolean,
+        val isPublic: Boolean,
 
         @Column(name = "is_closed")
-        val closed: Boolean
+        val isClosed: Boolean
 
 ) : BaseEntity<Long>() {
 

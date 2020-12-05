@@ -81,18 +81,20 @@ class Event(
 
 interface EventRepository: JpaRepository<Event, Long> {
         @Query(
-                "select e " +
-                "from Event e " +
-                "where e.closed = false " +
-                "and e.public = true " +
-                "and e.name like :name " +
-                "and (:#{#tags.size()} = 0 or e in ( " +
-                "       select e " +
-                "       from Event e " +
-                "       left join e.tags t " +
-                "       where t.name in :tags " +
-                "       group by e having count(t) = :#{new Long(#tags.size())} " +
-                "))"
+                """
+                        select e
+                        from Event e
+                        where e.isClosed = false
+                        and e.isPublic = true
+                        and e.name like :name
+                        and (:#{#tags.size()} = 0 or e in (
+                               select e
+                               from Event e
+                               left join e.tags t
+                               where t.name in :tags
+                               group by e having count(t) = :#{new Long(#tags.size())}
+                        ))
+                """
         )
         fun getActivePublicEvents(
                 @Param("name") name: String,

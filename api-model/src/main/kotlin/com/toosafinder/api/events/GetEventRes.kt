@@ -2,7 +2,7 @@ package com.toosafinder.api.events
 
 import java.time.LocalDateTime
 
-data class EventRes(
+data class GetEventRes(
         val id: Long,
 
         val name: String,
@@ -29,3 +29,7 @@ data class EventRes(
 
         val tags: List<String>
 )
+
+enum class GetEventErrors {
+    EVENT_NOT_FOUND,
+}

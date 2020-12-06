@@ -27,11 +27,7 @@ internal class UserService(
 
         val user = User(
             email = email,
-            login = if (login == null || login.isBlank()) {
-                generateLogin()
-            } else {
-                login
-            },
+            login = login ?: generateLogin(),
             password = passwordEncoder.encode(password),
             registrationTime = LocalDateTime.now()
         ).let { userRepository.save(it) }

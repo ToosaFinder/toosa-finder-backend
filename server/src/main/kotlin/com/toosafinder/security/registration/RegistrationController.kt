@@ -36,6 +36,10 @@ private class RegistrationController(
             maxLength(320)
         }
 
+        UserRegistrationReq::login {
+            run(Validations.loginValidation)
+        }
+
         UserRegistrationReq::password {
             run(Validations.passwordValidation)
         }

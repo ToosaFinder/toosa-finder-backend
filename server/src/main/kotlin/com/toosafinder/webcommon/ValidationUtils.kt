@@ -1,8 +1,6 @@
 package com.toosafinder.webcommon
 
-import io.konform.validation.Invalid
-import io.konform.validation.Valid
-import io.konform.validation.Validation
+import io.konform.validation.*
 import io.konform.validation.jsonschema.maxLength
 import io.konform.validation.jsonschema.minLength
 
@@ -38,6 +36,14 @@ class Validations {
             maxLength(320)
         }
 
-
+        val loginValidation = Validation<String?> {
+            isNullOrNotBlank()
+        }
     }
+}
+
+fun ValidationBuilder<String?>.isNullOrNotBlank(): Constraint<String?> {
+    return addConstraint(
+        "must be null either non blank"
+    ) { it == null || it.isNotBlank() }
 }

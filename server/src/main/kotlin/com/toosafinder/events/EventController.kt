@@ -82,6 +82,20 @@ private class EventController(
         }
     }
 
+    @PutMapping("/{id}/participant")
+    fun addParticipantToEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
+        return when (eventService.addParticipantToEvent(eventId, AuthorizedUserInfo.getUserId())) {
+            is ParticipantAddingResult.Success -> HTTP.ok()
+            is ParticipantAddingResult.EventNotFound -> HTTP.conflict(
+                    code = ParticipantAddingErrors.EVENT_NOT_FOUND.name,
+                    message = "Event was not found"
+            )
+            is ParticipantAddingResult.ParticipantLimitExceeded -> HTTP.conflict(
+                    code = ParticipantAddingErrors.PARTICIPANT_LIMIT_EXCEEDED.name,
+                    message = "Participant limit exceeded"
+            )
+        }
+    }
 }
 
 @Service
@@ -133,6 +147,19 @@ private class EventService(
         eventRepository.delete(event)
         return EventDeletionResult.Success
     }
+
+    fun addParticipantToEvent(eventId: Long, userId: Long): ParticipantAddingResult {
+        val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantAddingResult.EventNotFound
+
+        if (event.participants.size >= event.participantsLimit) {
+            return ParticipantAddingResult.ParticipantLimitExceeded
+        }
+
+        event.participants.add(participantRepository.findById(userId).get())
+        eventRepository.save(event)
+
+        return ParticipantAddingResult.Success
+    }
 }
 
 private fun Event.toDto() = GetEventRes (
@@ -147,7 +174,7 @@ private fun Event.toDto() = GetEventRes (
     startTime = startTime,
     isPublic = isPublic,
     isClosed = isClosed,
-    participants = participants.map(User::login),
+    participants = participants.map(Participant::login),
     tags = tags.map(Tag::name)
 )
 
@@ -186,4 +213,10 @@ sealed class EventDeletionResult {
 
     object BadPermissions: EventDeletionResult()
 
+}
+
+sealed class ParticipantAddingResult {
+    object Success: ParticipantAddingResult()
+    object EventNotFound: ParticipantAddingResult()
+    object ParticipantLimitExceeded: ParticipantAddingResult()
 }

@@ -143,6 +143,7 @@ private class EventService(
         return EventDeletionResult.Success
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun detachFromEvent(eventId: Long, userId: Long): ParticipantDetachingResult {
         val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantDetachingResult.EventNotFound
 

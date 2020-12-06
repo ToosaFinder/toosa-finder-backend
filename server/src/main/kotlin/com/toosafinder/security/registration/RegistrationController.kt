@@ -43,7 +43,7 @@ private class RegistrationController(
 
     @PostMapping
     fun registerUser(@RequestBody req: UserRegistrationReq): ResponseEntity<*> {
-        log.trace("Trying to register user \"${req.login}\" with email \"${req.email}\"")
+        log.trace("Trying to register user with email \"${req.email}\"")
         validation.throwIfNotValid(req)
         return when (registrationService.registerUser(req.login, req.email, req.password)) {
             is RegResult.Success -> HTTP.ok()
@@ -68,7 +68,7 @@ private class RegistrationService(
 ) {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    fun registerUser(login: String, email: String, password: String): RegResult {
+    fun registerUser(login: String?, email: String, password: String): RegResult {
         val user = when (val userCreationResult = userService.createUser(login, email, password)) {
             is UserCreationResult.Success -> userCreationResult.user
             is UserCreationResult.EmailDuplication -> return RegResult.EmailDuplication

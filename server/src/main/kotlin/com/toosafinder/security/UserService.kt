@@ -1,5 +1,7 @@
 package com.toosafinder.security
 
+import com.toosafinder.security.entities.Role
+import com.toosafinder.security.entities.RoleRepository
 import com.toosafinder.security.entities.User
 import com.toosafinder.security.entities.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -11,6 +13,7 @@ import java.time.LocalDateTime
 @Service
 internal class UserService(
     private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
 
@@ -29,7 +32,11 @@ internal class UserService(
             login = login,
             password = passwordEncoder.encode(password),
             registrationTime = LocalDateTime.now()
-        ).let { userRepository.save(it) }
+        ).let {
+            val roleName = Role.Name.UNCONFIRMED.name
+            it.roles.add(roleRepository.findByName(roleName)!!)
+            userRepository.save(it)
+        }
 
         return UserCreationResult.Success(user)
     }

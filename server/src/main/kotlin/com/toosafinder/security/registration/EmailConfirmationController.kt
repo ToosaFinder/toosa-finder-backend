@@ -2,7 +2,6 @@ package com.toosafinder.security.registration
 
 import com.toosafinder.security.entities.Role
 import com.toosafinder.webcommon.HTTP
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -28,8 +27,10 @@ private class EmailConfirmationController(
         }
 
         val userId = validationResult.user.id!!
-        val roleName = Role.Name.USER.toString()
-        roleManagementService.addRoleToUser(userId, roleName)
+        val unconfirmedRoleName = Role.Name.UNCONFIRMED.name
+        roleManagementService.removeRoleFromUser(userId, unconfirmedRoleName)
+        val userRoleName = Role.Name.USER.name
+        roleManagementService.addRoleToUser(userId, userRoleName)
         return HTTP.ok()
     }
 

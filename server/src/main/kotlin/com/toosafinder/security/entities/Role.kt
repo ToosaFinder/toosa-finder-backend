@@ -16,7 +16,8 @@ class Role(
 ) : BaseEntity<Long>() {
 
         enum class Name {
-                USER
+                USER,
+                UNCONFIRMED
         }
 
 }

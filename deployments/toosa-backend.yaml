@@ -28,9 +28,9 @@ spec:
             - name: DB_PASSWORD
               value: toosafinder
             - name: DB_HOSTNAME
-              value: 34.67.129.19
+              value: 34.71.169.120
             - name: DB_PORT
-              value: "5433"
+              value: "5432"
             - name: SPRING_PROFILES_ACTIVE
               value: test
           ports:

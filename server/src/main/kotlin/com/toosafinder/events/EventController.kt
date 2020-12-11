@@ -81,6 +81,20 @@ private class EventController(
         }
     }
 
+
+    @PutMapping("/{id}/participant")
+    fun addParticipantToEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
+        return when (eventService.addParticipantToEvent(eventId, AuthorizedUserInfo.getUserId())) {
+            is ParticipantAddingResult.Success -> HTTP.ok()
+            is ParticipantAddingResult.EventNotFound -> HTTP.conflict(
+                    code = ParticipantAddingErrors.EVENT_NOT_FOUND.name,
+                    message = "Event was not found"
+            )
+            is ParticipantAddingResult.ParticipantLimitExceeded -> HTTP.conflict(
+                    code = ParticipantAddingErrors.PARTICIPANT_LIMIT_EXCEEDED.name,
+                    message = "Participant limit exceeded"
+            )
+
     @DeleteMapping("/{id}/participant")
     fun detachFromEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
         return when (eventService.detachFromEvent(eventId, AuthorizedUserInfo.getUserId())) {
@@ -143,6 +157,19 @@ private class EventService(
         return EventDeletionResult.Success
     }
 
+    fun addParticipantToEvent(eventId: Long, userId: Long): ParticipantAddingResult {
+        val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantAddingResult.EventNotFound
+
+        if (event.participants.size >= event.participantsLimit) {
+            return ParticipantAddingResult.ParticipantLimitExceeded
+        }
+
+        event.participants.add(participantRepository.findById(userId).get())
+        eventRepository.save(event)
+
+        return ParticipantAddingResult.Success
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun detachFromEvent(eventId: Long, userId: Long): ParticipantDetachingResult {
         val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantDetachingResult.EventNotFound
@@ -167,8 +194,7 @@ private fun Event.toDto() = GetEventRes(
         isPublic = isPublic,
         isClosed = isClosed,
         participants = participants.map(Participant::login),
-        tags = tags.map(Tag::name)
-)
+        tags = tags.map(Tag::name))
 
 private fun EventCreationReq.toEvent(creator: Participant) = Event(
         name,
@@ -205,6 +231,12 @@ sealed class EventDeletionResult {
 
     object BadPermissions : EventDeletionResult()
 
+}
+
+sealed class ParticipantAddingResult {
+    object Success: ParticipantAddingResult()
+    object EventNotFound: ParticipantAddingResult()
+    object ParticipantLimitExceeded: ParticipantAddingResult()
 }
 
 sealed class ParticipantDetachingResult {

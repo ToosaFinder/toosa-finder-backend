@@ -4,7 +4,6 @@ import com.toosafinder.api.events.*
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.AuthorizedUserInfo
-import com.toosafinder.security.entities.User
 import com.toosafinder.webcommon.HTTP
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.ResponseEntity
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/event")
 private class EventController(
-    private val eventService: EventService
+        private val eventService: EventService
 ) {
     private val log by LoggerProperty()
 
@@ -27,7 +26,7 @@ private class EventController(
         return when (val eventFetchingResult = eventService.getEvent(id)) {
             is EventFetchingResult.Success -> HTTP.ok(eventFetchingResult.event.toDto())
             is EventFetchingResult.EventNotFound -> HTTP.conflict(
-                code = GetEventErrors.EVENT_NOT_FOUND.name
+                    code = GetEventErrors.EVENT_NOT_FOUND.name
             )
         }
     }
@@ -45,22 +44,22 @@ private class EventController(
 
         return when (val eventCreationResult = eventService.createEvent(event)) {
             is EventCreationResult.Success -> HTTP.ok(
-                EventCreationRes(
-                    id = eventCreationResult.id,
-                    name = eventCreationResult.event.name,
-                    creator = eventCreationResult.event.creator.login,
-                    description = eventCreationResult.event.description,
-                    address = eventCreationResult.event.address,
-                    latitude = eventCreationResult.event.latitude,
-                    longitude = eventCreationResult.event.longitude,
-                    participantsLimit = eventCreationResult.event.participantsLimit,
-                    startTime = eventCreationResult.event.startTime,
-                    isPublic = eventCreationResult.event.isPublic,
-                    tags = eventCreationResult.event.tags.map(Tag::name)
-                )
+                    EventCreationRes(
+                            id = eventCreationResult.id,
+                            name = eventCreationResult.event.name,
+                            creator = eventCreationResult.event.creator.login,
+                            description = eventCreationResult.event.description,
+                            address = eventCreationResult.event.address,
+                            latitude = eventCreationResult.event.latitude,
+                            longitude = eventCreationResult.event.longitude,
+                            participantsLimit = eventCreationResult.event.participantsLimit,
+                            startTime = eventCreationResult.event.startTime,
+                            isPublic = eventCreationResult.event.isPublic,
+                            tags = eventCreationResult.event.tags.map(Tag::name)
+                    )
             )
             is EventCreationResult.UserNotFound -> HTTP.conflict(
-                code = EventCreationErrors.USER_NOT_FOUND.name
+                    code = EventCreationErrors.USER_NOT_FOUND.name
             )
         }
     }
@@ -72,23 +71,33 @@ private class EventController(
         return when (eventService.deleteEvent(eventId, authorizedUserId)) {
             is EventDeletionResult.Success -> HTTP.ok()
             is EventDeletionResult.EventNotFound -> HTTP.conflict(
-                code = EventDeletionErrors.EVENT_NOT_FOUND.name,
-                message = "Event was not found"
+                    code = EventDeletionErrors.EVENT_NOT_FOUND.name,
+                    message = "Event was not found"
             )
             is EventDeletionResult.BadPermissions -> HTTP.conflict(
-                code = EventDeletionErrors.BAD_PERMISSIONS.name,
-                message = "Authorized user is not owner of the specified event"
+                    code = EventDeletionErrors.BAD_PERMISSIONS.name,
+                    message = "Authorized user is not owner of the specified event"
             )
         }
     }
 
+    @DeleteMapping("/{id}/participant")
+    fun detachFromEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
+        return when (eventService.detachFromEvent(eventId, AuthorizedUserInfo.getUserId())) {
+            is ParticipantDetachingResult.Success -> HTTP.ok()
+            is ParticipantDetachingResult.EventNotFound -> HTTP.conflict(
+                    code = ParticipantDetachingErrors.EVENT_NOT_FOUND.name,
+                    message = "Event was not found"
+            )
+        }
+    }
 }
 
 @Service
 private class EventService(
-    private val eventRepository: EventRepository,
-    private val tagRepository: TagRepository,
-    private val participantRepository: ParticipantRepository
+        private val eventRepository: EventRepository,
+        private val tagRepository: TagRepository,
+        private val participantRepository: ParticipantRepository
 ) {
 
     fun getEvent(id: Long): EventFetchingResult {
@@ -123,7 +132,7 @@ private class EventService(
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun deleteEvent(eventId: Long, authorizedUserId: Long): EventDeletionResult {
         val event = eventRepository.findById(eventId)
-            .orElse(null) ?: return EventDeletionResult.EventNotFound
+                .orElse(null) ?: return EventDeletionResult.EventNotFound
 
         val creatorId = event.creator.id!!
         if (creatorId != authorizedUserId) {
@@ -133,25 +142,35 @@ private class EventService(
         eventRepository.delete(event)
         return EventDeletionResult.Success
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun detachFromEvent(eventId: Long, userId: Long): ParticipantDetachingResult {
+        val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantDetachingResult.EventNotFound
+
+        event.participants.remove(participantRepository.findById(userId).get())
+        eventRepository.save(event)
+
+        return ParticipantDetachingResult.Success
+    }
 }
 
-private fun Event.toDto() = GetEventRes (
-    id = id!!,
-    name = name,
-    creator = creator.login,
-    description = description,
-    address = address,
-    latitude = latitude,
-    longitude = longitude,
-    participantsLimit = participantsLimit,
-    startTime = startTime,
-    isPublic = isPublic,
-    isClosed = isClosed,
-    participants = participants.map(User::login),
-    tags = tags.map(Tag::name)
+private fun Event.toDto() = GetEventRes(
+        id = id!!,
+        name = name,
+        creator = creator.login,
+        description = description,
+        address = address,
+        latitude = latitude,
+        longitude = longitude,
+        participantsLimit = participantsLimit,
+        startTime = startTime,
+        isPublic = isPublic,
+        isClosed = isClosed,
+        participants = participants.map(Participant::login),
+        tags = tags.map(Tag::name)
 )
 
-private fun EventCreationReq.toEvent(creator: Participant) = Event (
+private fun EventCreationReq.toEvent(creator: Participant) = Event(
         name,
         creator,
         description,
@@ -166,9 +185,9 @@ private fun EventCreationReq.toEvent(creator: Participant) = Event (
 
 sealed class EventFetchingResult {
 
-    data class Success(val event: Event): EventFetchingResult()
+    data class Success(val event: Event) : EventFetchingResult()
 
-    object EventNotFound: EventFetchingResult()
+    object EventNotFound : EventFetchingResult()
 }
 
 sealed class EventCreationResult {
@@ -180,10 +199,15 @@ sealed class EventCreationResult {
 
 sealed class EventDeletionResult {
 
-    object Success: EventDeletionResult()
+    object Success : EventDeletionResult()
 
-    object EventNotFound: EventDeletionResult()
+    object EventNotFound : EventDeletionResult()
 
-    object BadPermissions: EventDeletionResult()
+    object BadPermissions : EventDeletionResult()
 
+}
+
+sealed class ParticipantDetachingResult {
+    object Success : ParticipantDetachingResult()
+    object EventNotFound : ParticipantDetachingResult()
 }

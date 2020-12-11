@@ -87,13 +87,15 @@ private class EventController(
         return when (eventService.addParticipantToEvent(eventId, AuthorizedUserInfo.getUserId())) {
             is ParticipantAddingResult.Success -> HTTP.ok()
             is ParticipantAddingResult.EventNotFound -> HTTP.conflict(
-                    code = ParticipantAddingErrors.EVENT_NOT_FOUND.name,
-                    message = "Event was not found"
+                code = ParticipantAddingErrors.EVENT_NOT_FOUND.name,
+                message = "Event was not found"
             )
             is ParticipantAddingResult.ParticipantLimitExceeded -> HTTP.conflict(
-                    code = ParticipantAddingErrors.PARTICIPANT_LIMIT_EXCEEDED.name,
-                    message = "Participant limit exceeded"
+                code = ParticipantAddingErrors.PARTICIPANT_LIMIT_EXCEEDED.name,
+                message = "Participant limit exceeded"
             )
+        }
+    }
 
     @DeleteMapping("/{id}/participant")
     fun detachFromEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {

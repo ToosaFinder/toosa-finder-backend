@@ -2,7 +2,7 @@ package com.toosafinder.api.registration
 
 data class UserRegistrationReq(
     val email: String,
-    val login: String,
+    val login: String?,
     val password: String
 )
 

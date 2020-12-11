@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 internal class UserService(
@@ -18,8 +19,8 @@ internal class UserService(
 ) {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    fun createUser(login: String, email: String, password: String): UserCreationResult {
-        if (userRepository.existsByLogin(login)) {
+    fun createUser(login: String?, email: String, password: String): UserCreationResult {
+        if (login != null && userRepository.existsByLogin(login)) {
             return UserCreationResult.LoginDuplication
         }
 
@@ -29,7 +30,7 @@ internal class UserService(
 
         val user = User(
             email = email,
-            login = login,
+            login = login ?: generateLogin(),
             password = passwordEncoder.encode(password),
             registrationTime = LocalDateTime.now()
         ).let {
@@ -41,6 +42,7 @@ internal class UserService(
         return UserCreationResult.Success(user)
     }
 
+    private fun generateLogin(): String = UUID.randomUUID().toString()
 }
 
 internal sealed class UserCreationResult {

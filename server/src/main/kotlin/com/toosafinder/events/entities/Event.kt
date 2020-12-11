@@ -63,7 +63,7 @@ class Event(
             joinColumns = [JoinColumn(name = "event_id")],
             inverseJoinColumns = [JoinColumn(name = "participant_id")]
         )
-        val participants: MutableSet<User> = hashSetOf()
+        val participants: MutableSet<Participant> = hashSetOf()
 
         @ManyToMany(
                 cascade = [CascadeType.PERSIST, CascadeType.MERGE],
@@ -78,4 +78,6 @@ class Event(
 
 }
 
-interface EventRepository: JpaRepository<Event, Long>
+interface EventRepository: JpaRepository<Event, Long> {
+        fun getAllByIsClosedIsFalse(): List<Event>
+}

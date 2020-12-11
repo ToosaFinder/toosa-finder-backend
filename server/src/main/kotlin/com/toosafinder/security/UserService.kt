@@ -1,5 +1,7 @@
 package com.toosafinder.security
 
+import com.toosafinder.security.entities.Role
+import com.toosafinder.security.entities.RoleRepository
 import com.toosafinder.security.entities.User
 import com.toosafinder.security.entities.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -7,16 +9,18 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 internal class UserService(
     private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    fun createUser(login: String, email: String, password: String): UserCreationResult {
-        if (userRepository.existsByLogin(login)) {
+    fun createUser(login: String?, email: String, password: String): UserCreationResult {
+        if (login != null && userRepository.existsByLogin(login)) {
             return UserCreationResult.LoginDuplication
         }
 
@@ -26,14 +30,19 @@ internal class UserService(
 
         val user = User(
             email = email,
-            login = login,
+            login = login ?: generateLogin(),
             password = passwordEncoder.encode(password),
             registrationTime = LocalDateTime.now()
-        ).let { userRepository.save(it) }
+        ).let {
+            val roleName = Role.Name.UNCONFIRMED.name
+            it.roles.add(roleRepository.findByName(roleName)!!)
+            userRepository.save(it)
+        }
 
         return UserCreationResult.Success(user)
     }
 
+    private fun generateLogin(): String = UUID.randomUUID().toString()
 }
 
 internal sealed class UserCreationResult {

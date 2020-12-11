@@ -1,9 +1,11 @@
 package com.toosafinder.security.login
 
 import com.toosafinder.logging.LoggerProperty
+import com.toosafinder.security.entities.Role
+import com.toosafinder.security.entities.User
 import com.toosafinder.security.entities.UserRepository
-import com.toosafinder.security.jwt.JwtTokenService
 import com.toosafinder.security.jwt.JwtPayload
+import com.toosafinder.security.jwt.JwtTokenService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -21,13 +23,18 @@ internal class LoginService(
         val user = userRepository.findByEmail(loginOrEmail)
             ?: userRepository.findByLogin(loginOrEmail)
 
-        if(user == null) {
+        if (user == null) {
             log.debug("user {} not found", loginOrEmail)
             return LoginResult.Failure
         }
 
-        if(!passwordEncoder.matches(password, user.password)){
+        if (!passwordEncoder.matches(password, user.password)){
             log.debug("password of user {} does not match", loginOrEmail)
+            return LoginResult.Failure
+        }
+
+        if (!user.isConfirmed()) {
+            log.debug("user {} has not confirmed their email", loginOrEmail)
             return LoginResult.Failure
         }
 
@@ -40,6 +47,9 @@ internal class LoginService(
             accessToken = accessToken
         )
     }
+
+    private fun User.isConfirmed(): Boolean =
+        !roles.map {it.name}.contains(Role.Name.UNCONFIRMED.name)
 }
 
 internal sealed class LoginResult {

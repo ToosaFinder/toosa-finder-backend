@@ -85,8 +85,8 @@ interface EventRepository: JpaRepository<Event, Long> {
                         select e
                         from Event e
                         where e.isClosed = false
-                        and e.isPublic = true
-                        and e.name like :name
+                        and e.isPublic = true 
+                        and lower(e.name) like :name
                         and (:#{#tags.size()} = 0 or e in (
                                select e
                                from Event e

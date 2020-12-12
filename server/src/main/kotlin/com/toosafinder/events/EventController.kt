@@ -4,7 +4,6 @@ import com.toosafinder.api.events.EventCreationErrors
 import com.toosafinder.api.events.EventCreationReq
 import com.toosafinder.api.events.EventCreationRes
 import com.toosafinder.api.events.EventDeletionErrors
-import com.toosafinder.api.events.EventFilter
 import com.toosafinder.api.events.GetEventsRes
 import com.toosafinder.api.events.*
 import com.toosafinder.events.entities.*
@@ -107,9 +106,12 @@ private class EventController(
     }
 
     @GetMapping
-    fun getActivePublicEvents(@RequestBody filter: EventFilter): ResponseEntity<GetEventsRes> {
+    fun getActivePublicEvents(
+            @RequestParam("name", required = false) name: String?,
+            @RequestParam("tags", required = false) tags: Set<String>?
+    ): ResponseEntity<GetEventsRes> {
         log.debug("Fetching public active events by filter")
-        val events = eventService.getActivePublicEvents(filter).map(Event::toDto)
+        val events = eventService.getActivePublicEvents(name, tags).map(Event::toDto)
         return HTTP.ok(GetEventsRes(events))
     }
 
@@ -132,9 +134,11 @@ private class EventService(
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun createEvent(event: EventCreationReq): EventCreationResult {
         val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
         val newEvent = eventRepository.save(event.toEvent(creator))
+        newEvent.administrators.add(creator)
 
         for (tagName in event.tags) {
             val tag = tagRepository.findByName(tagName)
@@ -164,10 +168,10 @@ private class EventService(
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    fun getActivePublicEvents(filter: EventFilter): List<Event> =
+    fun getActivePublicEvents(name: String?, tags: Set<String>?): List<Event> =
         eventRepository.getActivePublicEvents(
-                name = "%${filter.name.trim()}%",
-                tags = filter.tags
+                name = "%${name.orEmpty().trim().toLowerCase()}%",
+                tags = tags ?: emptySet()
         )
 
     fun addParticipantToEvent(eventId: Long, userId: Long): ParticipantAddingResult {

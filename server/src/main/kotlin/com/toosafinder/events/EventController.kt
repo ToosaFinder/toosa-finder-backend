@@ -1,5 +1,10 @@
 package com.toosafinder.events
 
+import com.toosafinder.api.events.EventCreationErrors
+import com.toosafinder.api.events.EventCreationReq
+import com.toosafinder.api.events.EventCreationRes
+import com.toosafinder.api.events.EventDeletionErrors
+import com.toosafinder.api.events.GetEventsRes
 import com.toosafinder.api.events.*
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
@@ -29,13 +34,6 @@ private class EventController(
                     code = GetEventErrors.EVENT_NOT_FOUND.name
             )
         }
-    }
-
-    @GetMapping
-    fun getActiveEvents(): ResponseEntity<GetEventsRes> {
-        log.debug("Fetching all active events")
-        val events = eventService.getAllActiveEvents().map(Event::toDto)
-        return HTTP.ok(GetEventsRes(events))
     }
 
     @PostMapping()
@@ -81,7 +79,6 @@ private class EventController(
         }
     }
 
-
     @PutMapping("/{id}/participant")
     fun addParticipantToEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
         return when (eventService.addParticipantToEvent(eventId, AuthorizedUserInfo.getUserId())) {
@@ -107,6 +104,17 @@ private class EventController(
             )
         }
     }
+
+    @GetMapping
+    fun getActivePublicEvents(
+            @RequestParam("name", required = false) name: String?,
+            @RequestParam("tags", required = false) tags: Set<String>?
+    ): ResponseEntity<GetEventsRes> {
+        log.debug("Fetching public active events by filter")
+        val events = eventService.getActivePublicEvents(name, tags).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
+
 }
 
 @Service
@@ -126,11 +134,11 @@ private class EventService(
         }
     }
 
-    fun getAllActiveEvents(): List<Event> = eventRepository.getAllByIsClosedIsFalse()
-
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun createEvent(event: EventCreationReq): EventCreationResult {
         val creator = participantRepository.findByLogin(event.creator) ?: return EventCreationResult.UserNotFound
         val newEvent = eventRepository.save(event.toEvent(creator))
+        newEvent.administrators.add(creator)
 
         for (tagName in event.tags) {
             val tag = tagRepository.findByName(tagName)
@@ -159,6 +167,13 @@ private class EventService(
         return EventDeletionResult.Success
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getActivePublicEvents(name: String?, tags: Set<String>?): List<Event> =
+        eventRepository.getActivePublicEvents(
+                name = "%${name.orEmpty().trim().toLowerCase()}%",
+                tags = tags ?: emptySet()
+        )
+
     fun addParticipantToEvent(eventId: Long, userId: Long): ParticipantAddingResult {
         val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantAddingResult.EventNotFound
 
@@ -181,6 +196,7 @@ private class EventService(
 
         return ParticipantDetachingResult.Success
     }
+
 }
 
 private fun Event.toDto() = GetEventRes(
@@ -196,7 +212,8 @@ private fun Event.toDto() = GetEventRes(
         isPublic = isPublic,
         isClosed = isClosed,
         participants = participants.map(Participant::login),
-        tags = tags.map(Tag::name))
+        tags = tags.map(Tag::name)
+)
 
 private fun EventCreationReq.toEvent(creator: Participant) = Event(
         name,

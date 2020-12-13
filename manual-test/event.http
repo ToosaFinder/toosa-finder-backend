@@ -46,6 +46,6 @@ Content-Type: application/json
 GET http://{{host}}:{{port}}/event/tag/popular
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc
 
-### active events
-GET http://{{host}}:{{port}}/event
+### публичные активные мероприятия, отфильтрованные по имени и тегам; параметры фильтрации опциональны
+GET http://{{host}}:{{port}}/event?name=new%20year&tags=testtag1,testtag3
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBleGFtcGxlLmNvbSIsImp0aSI6IjEiLCJpYXQiOjE2MDYwNDc3OTgsImV4cCI6MTYwNjA1MTM5OH0.Gnr12n7uECfrejR6f7FP2T8zuGZL-LPfvzNSkB0e5gc

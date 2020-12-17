@@ -1,7 +1,6 @@
 package com.toosafinder.events.entities
 
 import com.toosafinder.BaseEntity
-import com.toosafinder.security.entities.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -101,8 +100,6 @@ interface EventRepository: JpaRepository<Event, Long> {
                 @Param("name") name: String,
                 @Param("tags") tags: Set<String>
         ): List<Event>
-
-        fun getAllByIsClosedIsFalse(): List<Event>
 
         @Query(
                 """

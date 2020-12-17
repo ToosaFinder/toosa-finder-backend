@@ -36,13 +36,6 @@ private class EventController(
         }
     }
 
-    @GetMapping
-    fun getActiveEvents(): ResponseEntity<GetEventsRes> {
-        log.debug("Fetching all active events")
-        val events = eventService.getAllActiveEvents().map(Event::toDto)
-        return HTTP.ok(GetEventsRes(events))
-    }
-
     @PostMapping()
     fun createEvent(@RequestBody event: EventCreationReq): ResponseEntity<*> {
         log.trace("Event creation")
@@ -128,6 +121,16 @@ private class EventController(
             )
         }
     }
+
+    @GetMapping
+    fun getActivePublicEvents(
+            @RequestParam("name", required = false) name: String?,
+            @RequestParam("tags", required = false) tags: Set<String>?
+    ): ResponseEntity<GetEventsRes> {
+        log.debug("Fetching public active events by filter")
+        val events = eventService.getActivePublicEvents(name, tags).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
 }
 
 @Service
@@ -146,8 +149,6 @@ private class EventService(
             EventFetchingResult.EventNotFound
         }
     }
-
-    fun getAllActiveEvents(): List<Event> = eventRepository.getAllByIsClosedIsFalse()
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun createEvent(event: EventCreationReq): EventCreationResult {
@@ -182,6 +183,13 @@ private class EventService(
         return EventDeletionResult.Success
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getActivePublicEvents(name: String?, tags: Set<String>?): List<Event> =
+        eventRepository.getActivePublicEvents(
+                name = "%${name.orEmpty().trim().toLowerCase()}%",
+                tags = tags ?: emptySet()
+        )
+
     fun addParticipantToEvent(eventId: Long, userId: Long): ParticipantAddingResult {
         val event = eventRepository.findByIdOrNull(eventId) ?: return ParticipantAddingResult.EventNotFound
 
@@ -212,7 +220,6 @@ private class EventService(
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     fun getActiveEventsUserTakesPartIn(userId: Long): List<Event> =
             eventRepository.getActiveEventsUserTakesPartIn(userId)
-
 }
 
 private fun Event.toDto() = GetEventRes(

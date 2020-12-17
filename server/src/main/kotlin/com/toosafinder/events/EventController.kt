@@ -1,11 +1,11 @@
 package com.toosafinder.events
 
+import com.toosafinder.api.events.*
 import com.toosafinder.api.events.EventCreationErrors
 import com.toosafinder.api.events.EventCreationReq
 import com.toosafinder.api.events.EventCreationRes
 import com.toosafinder.api.events.EventDeletionErrors
 import com.toosafinder.api.events.GetEventsRes
-import com.toosafinder.api.events.*
 import com.toosafinder.events.entities.*
 import com.toosafinder.logging.LoggerProperty
 import com.toosafinder.security.AuthorizedUserInfo
@@ -79,6 +79,23 @@ private class EventController(
         }
     }
 
+    @GetMapping("/my/admin")
+    fun getAdministeredEvents(): ResponseEntity<GetEventsRes> {
+        val authorizedUserId = AuthorizedUserInfo.getUserId()
+        log.debug("Fetching events administered by user #$authorizedUserId")
+        val events = eventService.getAdministeredEvents(authorizedUserId).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
+
+    @GetMapping("/my/participant")
+    fun getActiveEventsUserTakesPartIn(): ResponseEntity<GetEventsRes> {
+        val authorizedUserId = AuthorizedUserInfo.getUserId()
+        log.debug("Fetching events user #$authorizedUserId takes part in")
+        val events = eventService.getActiveEventsUserTakesPartIn(authorizedUserId).map(Event::toDto)
+        return HTTP.ok(GetEventsRes(events))
+    }
+
+
     @PutMapping("/{id}/participant")
     fun addParticipantToEvent(@PathVariable("id") eventId: Long): ResponseEntity<*> {
         return when (eventService.addParticipantToEvent(eventId, AuthorizedUserInfo.getUserId())) {
@@ -114,7 +131,6 @@ private class EventController(
         val events = eventService.getActivePublicEvents(name, tags).map(Event::toDto)
         return HTTP.ok(GetEventsRes(events))
     }
-
 }
 
 @Service
@@ -197,6 +213,13 @@ private class EventService(
         return ParticipantDetachingResult.Success
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getAdministeredEvents(userId: Long): List<Event> =
+            eventRepository.getAdministeredEvents(userId)
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    fun getActiveEventsUserTakesPartIn(userId: Long): List<Event> =
+            eventRepository.getActiveEventsUserTakesPartIn(userId)
 }
 
 private fun Event.toDto() = GetEventRes(

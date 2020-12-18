@@ -1,3 +1,3 @@
 email:
-  email-confirmation-url: http:/34.66.106.121/user/confirm-email
-  password-restore-url: http://34.66.106.121/user/restore-password
+  email-confirmation-url: http://35.222.255.162/user/confirm-email
+  password-restore-url: http://35.222.255.162/user/restore-password

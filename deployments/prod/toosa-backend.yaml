@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: toosa-backend
+  name: toosa-backend-prod
   namespace: prod
 spec:
   selector:

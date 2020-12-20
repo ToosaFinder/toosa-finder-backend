@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: toosa-backend-lb
+  namespace: prod
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    app: toosa-backend-prod

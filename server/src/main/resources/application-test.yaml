@@ -1,0 +1,3 @@
+email:
+  email-confirmation-url: http://${FRONT_HOST:35.222.255.162}/user/confirm-email
+  password-restore-url: http://${FRONT_HOST:35.222.255.162}/user/restore-password

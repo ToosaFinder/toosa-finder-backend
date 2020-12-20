@@ -1,0 +1,63 @@
+### Resister user должно прийти письмо. Токен из него пихаем в запрос
+POST http://{{host}}:{{port}}/user/registration
+Content-Type: application/json
+
+{
+  "email": "Pasha21215@gmail.com",
+  "login": "haha",
+  "password": "12345678910"
+}
+
+
+### confirm email. Должно быть 200
+PUT http://{{host}}:{{port}}/user/email-confirmed/9243524e-8ff0-4b66-9092-9c3b54a5387b
+Content-Type: application/json
+
+
+### login by login. Должен вернуть только accessToken. Пока что вместо рефреша пусть юзер заново логинится
+POST http://{{host}}:{{port}}/user/login
+Content-Type: application/json
+
+{
+  "userId": "test1",
+  "password": "test1"
+}
+
+### login by email
+POST http://{{host}}:{{port}}/user/login
+Content-Type: application/json
+
+{
+  "userId": "Pasha21215@gmail.com",
+  "password": "12345678910"
+}
+
+
+### restore password
+POST http://{{host}}:{{port}}/user/restore-password
+Content-Type: application/json
+
+{
+  "email": "Pasha21215@gmail.com"
+}
+
+
+### set new password. должно письмо придти. токен из него пихнуть в запрос
+
+POST http://{{host}}:{{port}}/user/set-password
+Content-Type: application/json
+
+{
+  "emailToken": "9cb9de86-f3e8-4b0b-9578-b5fc8d9cfa2a",
+  "password": "123456789101112"
+}
+
+
+### login by email
+POST http://{{host}}:{{port}}/user/login
+Content-Type: application/json
+
+{
+  "userId": "Pasha21215@gmail.com",
+  "password": "123456789101112"
+}

@@ -1,0 +1,58 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+
+logging:
+  level:
+    ROOT: info
+
+spring:
+  datasource:
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123321}
+    url: jdbc:postgresql://${DB_HOSTNAME:localhost}:${DB_PORT:5432}/${DB_NAME:toosafinder}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800001
+  jpa:
+    hibernate:
+      ddl-auto: none
+  mail:
+    host:
+      smtp.gmail.com
+    port:
+      587
+    username:
+      toosafinder.beta@gmail.com
+    password:
+      p4$$w0rd
+    properties:
+      mail:
+        smtp:
+          auth:
+            true
+          starttls:
+            enable:
+              true
+
+  flyway:
+    validate-migration-naming: true
+
+email-tokens:
+  expiration-time: 14d
+
+email:
+  email-confirmation-url: http://localhost:3000/user/confirm-email
+  password-restore-url: http://localhost:3000/user/restore-password
+  templates:
+    email-confirmation-template-file-path:
+      /static/templates/emailConfirmationMessage
+    password-restore-template-file-path:
+      /static/templates/passwordRestoreMessage
+
+jwt:
+  expiration: 3600000
+  secret: dG9vc2FGaW5kZXJWZXJ5VmVyeVN0cm9uZ1NlY3JldEtleQ==

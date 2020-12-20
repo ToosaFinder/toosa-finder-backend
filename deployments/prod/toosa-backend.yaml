@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toosa-backend
+  namespace: prod
+spec:
+  selector:
+    matchLabels:
+      app: toosa-backend-prod
+  replicas: 2
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: toosa-backend-prod
+    spec:
+      containers:
+        - image: toosafinder/toosafinder-back:master
+          imagePullPolicy: Always
+          name: toosa-backend-prod
+          env:
+            - name: DB_NAME
+              value: toosafinder-prod
+            - name: DB_USERNAME
+              value: toosafinder
+            - name: DB_PASSWORD
+              value: toosafinder
+            - name: DB_HOSTNAME
+              value: 34.71.169.120
+            - name: DB_PORT
+              value: "5432"
+            - name: SPRING_PROFILES_ACTIVE
+              value: test
+            - name: FRONT_HOST
+              value: 34.70.200.159
+          ports:
+            - containerPort: 8081

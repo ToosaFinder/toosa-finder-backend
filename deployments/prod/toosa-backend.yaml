@@ -20,7 +20,7 @@ spec:
         app: toosa-backend-prod
     spec:
       containers:
-        - image: toosafinder/toosafinder-back:master
+        - image: toosafinder/toosafinder-back:latest
           imagePullPolicy: Always
           name: toosa-backend-prod
           env:
